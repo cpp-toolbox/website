@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/cjm-css/styles.css">
+<title>window - GitHub</title>
+<div class="wrapper">
+<h1>Info</h1>
+<p>A glfw window </p>
+<h1>Depdendencies</h1>
+<ul>
+<li><a href="https://github.com/glfw/glfw">glfw</a></li>
+<li><a href="https://github.com/opengl-toolbox/glad_opengl_3.3_core">glad3.3</a></li>
+</ul>
+<h1>CMake</h1>
+<p>```
+...</p>
+<h1>GLAD: opengl function loader</h1>
+<p>include_directories(external_libraries/glad_opengl_3.3_core/include)
+add_subdirectory(external_libraries/glad_opengl_3.3_core)</p>
+<h1>GLFW</h1>
+<h1>disable unnessary steps in build</h1>
+<p>set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)</p>
+<p>add_subdirectory(external_libraries/glfw)</p>
+<p>... </p>
+<p>target_link_libraries(your_project_name ... glfw glad)
+```</p>
+<h2><a href='https://github.com/cpp-toolbox/window'>source code</a></h2>
+</div>

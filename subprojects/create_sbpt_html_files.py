@@ -79,7 +79,7 @@ def save_html(filename, html_content):
 
 def generate_index_html(tagged_projects):
     """Generate an index HTML file based on tags."""
-    index_content = '<link rel="stylesheet" href="/cjm-css/styles.css">\n'
+    index_content = '<link rel="stylesheet" href="../cjm-css/styles.css">\n'
     index_content += '<div class="wrapper">\n'
     index_content += "<h1>Project Index by Tag</h1>\n"
     

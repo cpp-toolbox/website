@@ -78,11 +78,15 @@ def save_html(filename, html_content):
     print(f"Saved HTML as {filename}")
 
 def generate_index_html(tagged_projects):
-    """Generate an index HTML file based on tags."""
+    """Generate an index HTML file based on tags, ensuring 'unsorted' comes last."""
     index_content = '<link rel="stylesheet" href="../cjm-css/styles.css">\n'
     index_content += '<div class="wrapper">\n'
     index_content += "<h1>Project Index by Tag</h1>\n"
     
+    # Separate the 'unsorted' tag from others
+    unsorted_projects = tagged_projects.pop("unsorted", None)
+
+    # Add all other tags first
     for tag, projects in sorted(tagged_projects.items()):
         index_content += f"<h2>{tag}</h2>\n<ul>\n"
         for project in sorted(projects):
@@ -90,6 +94,14 @@ def generate_index_html(tagged_projects):
             index_content += f'\t<li><a href="{project_link}">{project}</a></li>\n'
         index_content += "</ul>\n"
     
+    # Add 'unsorted' tag last, if it exists
+    if unsorted_projects:
+        index_content += "<h2>unsorted</h2>\n<ul>\n"
+        for project in sorted(unsorted_projects):
+            project_link = f"{project}.html"
+            index_content += f'\t<li><a href="{project_link}">{project}</a></li>\n'
+        index_content += "</ul>\n"
+
     index_content += "</div>\n"  # Close the wrapper div
     save_html("index.html", index_content)
 
@@ -125,7 +137,7 @@ def main():
             for tag in tags:
                 tagged_projects[tag].append(project)
         else:
-            tagged_projects["Unsorted"].append(project)
+            tagged_projects["unsorted"].append(project)
         
         # Create HTML with dependencies
         html_content = create_html(project, md_html, dependencies)

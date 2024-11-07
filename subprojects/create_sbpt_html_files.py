@@ -48,8 +48,8 @@ def create_html(project_name, md_html, dependencies):
     # GitHub URL for the project
     github_url = f"https://github.com/cpp-toolbox/{project_name}"
     
-    # Add the stylesheet link and title with GitHub link
-    html_content = f'<link rel="stylesheet" href="/cjm-css/styles.css">\n'
+    # Add the stylesheet link and title with GitHub link, relative because github pages bad with /project/index.html takes you back out...
+    html_content = f'<link rel="stylesheet" href="../cjm-css/styles.css">\n'
     html_content += f'<title>{project_name} - GitHub</title>\n'
     html_content += f'<div class="wrapper">\n'
     

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPP Toolbox</title>
+</head>
+<body>
+    <h1>CPP Toolbox</h1>
+    <p>A collection of repositories which use each other to build up more complex programs.</p>
+    <p>The goal is to stop writing the same code and doing it in a slightly different way each time, but rather improve the quality of existing code.</p>
+    <p>Most of the content will be tailored for game development so there will be examples of sound, physics, etc.</p>
+    <p>The code should run on Windows, Mac, and Linux, with an emphasis on Linux first as anyone with a computer can get Linux, but not everyone can afford Windows or Mac.</p>
+    <p>Anyone is welcome to contribute, but it's best to join <a href="https://discord.gg/8yTdwdYSaQ">the Discord server</a> first to chat about what changes you are looking to make. Feel free to join if you're having trouble with anything.</p>
+    <p><strong>NOTE:</strong> Before you do anything else, <a href="https://toolbox.cuppajoeman.com/tool_howtos/git/projects_as_composition_of_submodules.html">read this article</a> to understand why the structure is the way that it is.</p>
+
+    <h2>Projects</h2>
+    <p>The projects in this repo should do one thing well, and only do that. Try not to have multiple goals when creating new projects in this organization.</p>
+    <p>All projects use submodules to facilitate the integration of subprojects. Subprojects need to be set up to link to each other using <code>sbpt</code>. For managing external libraries, we use <code>conan</code>, so install it on your system and follow their docs for preliminary setup on how to generate a profile before you run any conan commands.</p>
+
+    <p>First, <code>cd</code> into the root of the project, then:</p>
+    <pre>
+        # get all subproject content
+        git submodule update --init --recursive
+
+        # generate dynamic includes to linked subprojects
+        cd sbpt
+        python sbpt.py initialize ../src
+        cd ..
+
+        # install required packages
+        conan install . --build=missing
+
+        # generate build system and then build
+        cmake --preset conan-release
+        cmake --build --preset conan-release
+
+        cd build/Release
+        # now run the executable
+    </pre>
+    <p>From there, run the executable. Note that if you try running the executable from anywhere else, it will probably fail because it depends on paths of resources being relative to this folder, which may be fixed in the future.</p>
+    <p>If you are looking to develop existing code, note that we use a consistent style guide to keep things organized. We use <code>clang-format</code> for this. To populate the project with the correct settings, go to the root of the project and do:</p>
+    <pre>
+        cd clang_formatting
+        ./create_symlinks.sh
+    </pre>
+
+    <h2>Sub Projects</h2>
+    <p>Anything denoted by SUBPROJECT is a repository of files which probably will not work on its own, but is to be used in a larger application. There are 50+ repositories here, so listing them out would be too long. Instead, read about how to interact with them in the tools section.</p>
+
+    <h2>Minimal Working Examples</h2>
+    <p>Along with these SUBPROJECTS, we also have some minimally working examples that use the subprojects:</p>
+    <ul>
+        <li><a href="https://github.com/opengl-toolbox/mwe_glfw">mwe glfw</a> - glfw window using opengl</li>
+        <li><a href="https://github.com/cpp-toolbox/mwe_shader_cache">mwe shader cache</a> - a wrapper around working with shaders, greatly simplifies interaction with opengl and shaders</li>
+        <li><a href="https://github.com/cpp-toolbox/mwe_texture_atlas">mwe texture atlas</a> - a system for working with texture atlases through a simple json format</li>
+        <li><a href="https://github.com/cpp-toolbox/mwe_vertex_geometry">mwe vertex geometry</a> - a minimal place to view 3d geometry, uses a noclip fps camera</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_model_loading">mwe model loading</a> - model loading with noclip 3d character controller</li>
+        <li><a href="https://github.com/cpp-toolbox/mwe_model_loading_lighting">mwe model loading lighting</a> - same as above with lighting</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_font_rendering">mwe font rendering</a> - demonstrates font rendering with freetype fonts</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_physics_world_with_character">mwe physics world with character</a> - demonstrates a 3d world with a character that can be controlled with mouse and keyboard (Jolt Physics)</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_sound_world_with_character">mwe sound world with character</a> - demonstrates a 3d world with positional sound with a character which can be controlled with mouse and keyboard (openal)</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_networking">mwe networking</a> - basic network setup with enet</li>
+        <li><a href="https://github.com/opengl-toolbox/mwe_networked_physics_world_with_character">mwe networked physics world with character</a> - demonstrates a client-server network model using enet, supports connections and renders other players on the map</li>
+    </ul>
+
+    <h2>Tools</h2>
+    <h3><a href="https://github.com/cpp-toolbox/build_notifier">build_notifier</a></h3>
+    <p>Every project here uses conan for package management, so you usually have to run the command <code>cmake --build --preset conan-release</code> multiple times. This notifier makes it easier by playing a success or fail sound when compilation finishes, so you can stop staring at the build process and continue working in the meantime.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/sbpt">sbpt</a></h3>
+    <p>When subprojects use other subprojects, you usually have to hard-code includes to those locations, which differ based on file structure. This script was created to fix this issue.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/cpp_file_generator">cpp_file_generator</a></h3>
+    <p>IDE's have a lot of features, but language servers are catching up. One feature that's nice but missing is simply creating new <code>.cpp</code>/<code>.hpp</code> pairs for a new class or file you want to make. This generator does so.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/editor_configurations">editor_configurations</a></h3>
+    <p>When working with a cpp-toolbox project, there are usually four main things you want to do: build, run, debug the program, and use git. This repository facilitates these tasks simply for various editors. For example, to start Neovim with terminals opened (in buffers), run <code>python scripts/editor_configurations/launch_nvim.py</code> or from a running instance of nvim, <code>:source scripts/editor_configurations/cpp_terminal_autostart.vim</code>.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/cpp_project_bootstrapper">cpp_project_bootstrapper</a></h3>
+    <p>Creating new cpp projects can be time-consuming, as setting up the required files takes time away from coding. In our context, we have to make multiple projects for testing purposes and creating MWE’s. This script helps manage that process quickly.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/process_changes_in_submodules">process_changes_in_submodules</a></h3>
+    <p>When working on projects mainly composed of submodules, committing changes can be cumbersome because you must visit each submodule separately to commit them. This script simplifies the process by reducing the moving around and finding necessary changes.</p>
+
+    <h3><a href="https://github.com/cpp-toolbox/cpp_tbx_submodule_adder">cpp_tbx_submodule_adder</a></h3>
+    <p>Adding submodules can be cumbersome. To see the available submodules, you’d typically look at the web interface, go to the project, copy the clone URL, and so on. This script provides a command-line interface to list and select submodules automatically.</p>
+</body>
+</html>

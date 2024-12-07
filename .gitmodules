@@ -1,3 +1,9 @@
 [submodule "cjm-css"]
-	path = cjm-css
+	path = html/cjm-css
 	url = git@github.com:cuppajoeman/cjm-css.git
+[submodule "fsweb"]
+	path = scripts/fsweb
+	url = git@github.com:simple-web-tools/fsweb.git
+[submodule "scripts/fs_utils"]
+	path = scripts/fs_utils
+	url = git@github.com:py-garden/fs_utils.git

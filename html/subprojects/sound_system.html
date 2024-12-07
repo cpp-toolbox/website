@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="stylesheet" href="../cjm-css/styles.css">
+<title>sound_system - GitHub</title>
+
+</head>
+<body>
+<div class="wrapper">
+<h1>Info</h1>
+<p>sound system which wraps openal </p>
+<h1>warning</h1>
+<p>You must define a subproject called sound_types where you have an enum like this:</p>
+<p><code>cpp
+// Enum representing different sound types
+enum class SoundType {
+    SOUND_1,
+    SOUND_2,
+    SOUND_3,
+};</code></p>
+<p>also give it a <code>sbpt.ini</code> file:
+<code>[subproject]
+export = sound_types.hpp</code></p>
+<p>and be sure to run <code>sbpt.py</code> so that the sound system will know where to find that.</p>
+<h1>Dependencies</h1>
+<ul>
+<li><a href="https://github.com/kcat/openal-soft">openal-soft</a></li>
+<li><a href="https://github.com/libsndfile/libsndfile">libsndfile</a></li>
+</ul>
+<h2><a href='https://github.com/cpp-toolbox/sound_system'>source code</a></h2>
+
+<h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/sound_system.git</h2>
+
+<h2>subproject dependencies</h2>
+<ul>
+	<li><a href="sound_types.html">sound_types</a></li>
+</ul>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+
+==== Starting work on fsweb_generated_dir ====
+~~~> Modifying html files to include search functionality
+~~~> Generating index file with links to dirs: ['search', 'subprojects', 'cjm-css'], and files: ['index.html']
+==== Done with fsweb_generated_dir ====
+
+
+==== Starting work on fsweb_generated_dir/search ====
+~~~> Modifying html files to include search functionality
+~~~> Generating index file with links to dirs: [], and files: []
+==== Done with fsweb_generated_dir/search ====
+
+
+==== Starting work on fsweb_generated_dir/subprojects ====
+~~~> Modifying html files to include search functionality
+~~~> Generating index file with links to dirs: [], and files: ['render_primitives.html', 'draw_info.html', 'colors.html', 'formatting.html', 'multiplayer_physics.html', 'transform.html', 'physics_debug_renderer.html', 'version_info.html', 'shader_uniform_binders.html', 'cpp_project_html_viewer.html', 'game_loop.html', 'equivalent_datatype_conversions.html', 'logger_component.html', 'textured_model_loading.html', 'shaders.html', 'client_systems_namespace.html', 'index.html', 'glfw_lambda_callback_manager.html', 'server_systems_namespace.html', 'font_atlas.html', 'temporal_binary_signal.html', 'packet_types.html', 'opengl_texture_cache.html', 'fixed_frequency_loop.html', 'batcher.html', 'shader_cache.html', 'shader_pipeline.html', 'window.html', 'sound_system.html', 'config_file_parser.html', 'spdlog_setup.html', 'physics.html', 'stopwatch.html', 'mwe_networking.html', 'assets.html', 'networked_input_snapshot.html', 'input_snapshot.html', 'packet_handler.html', 'character_update.html', 'expiring_data_container.html', 'networked_character_data.html', 'mouse.html', 'texture_atlas.html', 'rate_limited_function.html', 'client_packet_types.html', 'texture_loader.html', 'thread_safe_queue.html', 'text_renderer.html', 'fps_camera.html', 'shader_standard.html', 'client_networking.html', 'model_loading.html', 'vertex_geometry.html', 'server_networking.html', 'camera.html']
+==== Done with fsweb_generated_dir/subprojects ====
+
+
+==== Starting work on fsweb_generated_dir/cjm-css ====
+~~~> Modifying html files to include search functionality
+~~~> Generating index file with links to dirs: [], and files: []
+==== Done with fsweb_generated_dir/cjm-css ====
+
+generating search list

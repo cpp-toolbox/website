@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./fsweb/fsweb_generated_dir
+          path: ./fsweb_generated_dir
 
   # Deployment job
   deploy:

@@ -8,8 +8,7 @@
 </head>
 <body>
     <div class="wrapper">
-        <h1>CPP Toolbox</h1>
-
+        <h1><a href="https://github.com/cpp-toolbox">cpp-toolbox</a></h1>
         <p>A collection of repositories which use each other to build up more complex programs.</p>
         <p>The goal is to stop writing the same code and doing it in a slightly different way each time, but rather improve the quality of existing code.</p>
         <p>Most of the content will be tailored for game development so there will be examples of sound, physics, etc.</p>
@@ -27,9 +26,10 @@
             git submodule update --init --recursive
 
             # generate dynamic includes to linked subprojects
-            cd sbpt
-            python sbpt.py initialize ../src
-            cd ..
+            python scripts/sbpt/main.py src
+
+            # if using batcher
+            python scripts/setup/batcher.py
 
             # install required packages
             conan install . --build=missing

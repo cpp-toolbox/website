@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="stylesheet" href="../cjm-css/styles.css">
+<title>packet_handler - GitHub</title>
+
+
+   <link id="theme-stylesheet" rel="stylesheet" href="/search/dark_theme.css">
+
+   
+
+    <link rel="stylesheet" href="/search/search.css">
+    
+</head>
+<body>
+<div class="wrapper">
+<h1>packet_handler</h1>
+<p>to use the packet handler you have to create a subproject called packet_types that defines a struct as follows:</p>
+<p><code>packet_type.hpp</code>
+<code>cpp
+enum class PacketType : uint8_t {
+    UNIQUE_CLIENT_ID,
+    GAME_UPDATE_POSITIONS,
+    GAME_UPDATE_ONE_TIME_EVENTS,
+    USER_MESSAGES,
+};</code>
+when you run <code>sbpt</code> it will correctly include it.</p>
+<h2><a href='https://github.com/cpp-toolbox/packet_handler'>source code</a></h2>
+
+<h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/packet_handler.git</h2>
+
+<h2>subproject dependencies</h2>
+<ul>
+	<li><a href="packet_types.html">packet_types</a></li>
+	<li><a href="client_networking.html">client_networking</a></li>
+	<li><a href="server_networking.html">server_networking</a></li>
+</ul>
+</div>
+
+
+<div id="searchModal" class="modal">
+   <div class="modal-content">
+       <input type="text" id="searchInput" placeholder="Search...">
+       <ul id="results"></ul>
+   </div>
+</div>
+
+
+<script src="/search/fuzzysort.js"></script>
+<script src="/search/search_callbacks.js"></script>
+<script src="/search/search_list.js"></script>
+<script src="/search/search.js"></script>
+
+</body>
+</html>

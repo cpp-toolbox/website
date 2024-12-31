@@ -26,7 +26,30 @@
         <p><strong>NOTE:</strong> Before you do anything else, <a href="https://toolbox.cuppajoeman.com/tool_howtos/git/projects_as_composition_of_submodules.html">read this article</a> to understand why the structure is the way that it is.</p>
         </fieldset>
 
-        <br>
+        <fieldset>
+            <legend><h2>Minimal Working Examples</h2></legend>
+            <ul>
+                <li><a href="https://github.com/opengl-toolbox/mwe_glfw">mwe glfw</a> - glfw window using opengl</li>
+                <li><a href="https://github.com/cpp-toolbox/mwe_shader_cache">mwe shader cache</a> - a wrapper around working with shaders, greatly simplifies interaction with opengl and shaders</li>
+                <li><a href="https://github.com/cpp-toolbox/mwe_texture_atlas">mwe texture atlas</a> - a system for working with texture atlases through a simple json format</li>
+                <li><a href="https://github.com/cpp-toolbox/mwe_vertex_geometry">mwe vertex geometry</a> - a minimal place to view 3d geometry, uses a noclip fps camera</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_model_loading">mwe model loading</a> - model loading with noclip 3d character controller</li>
+                <li><a href="https://github.com/cpp-toolbox/mwe_model_loading_lighting">mwe model loading lighting</a> - same as above with lighting</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_font_rendering">mwe font rendering</a> - demonstrates font rendering with freetype fonts</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_physics_world_with_character">mwe physics world with character</a> - demonstrates a 3d world with a character that can be controlled with mouse and keyboard (Jolt Physics)</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_sound_world_with_character">mwe sound world with character</a> - demonstrates a 3d world with positional sound with a character which can be controlled with mouse and keyboard (openal)</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_networking">mwe networking</a> - basic network setup with enet</li>
+                <li><a href="https://github.com/opengl-toolbox/mwe_networked_physics_world_with_character">mwe networked physics world with character</a> - demonstrates a client-server network model using enet, supports connections and renders other players on the map</li>
+            </ul>
+        </fieldset>
+
+
+        <fieldset>
+            <legend><h2><a href="subprojects/index.html">Sub Projects</a></h2></legend>
+            <p>Anything denoted by SUBPROJECT is a repository of files which probably will not work on its own, but is to be used in a larger application. We rely on these subprojects to isolate the functionality of a specific thing that can be re-used elsewhere.</p>
+        </fieldset>
+
+        <h1>Developing</h1>
 
         <fieldset>
             <legend><h2>Preliminary Setup</h2></legend>
@@ -75,37 +98,26 @@
         <br>
 
         <fieldset>
-            <legend><h2><a href="subprojects/index.html">Sub Projects</a></h2></legend>
-            <p>Anything denoted by SUBPROJECT is a repository of files which probably will not work on its own, but is to be used in a larger application. We rely on these subprojects to isolate the functionality of a specific thing that can be re-used elsewhere.</p>
-        </fieldset>
-        
-        <br>
-
-        <fieldset>
-            <legend><h2>Minimal Working Examples</h2></legend>
-            <p>Along with these SUBPROJECTS, we also have some minimally working examples that use the subprojects:</p>
-            <ul>
-                <li><a href="https://github.com/opengl-toolbox/mwe_glfw">mwe glfw</a> - glfw window using opengl</li>
-                <li><a href="https://github.com/cpp-toolbox/mwe_shader_cache">mwe shader cache</a> - a wrapper around working with shaders, greatly simplifies interaction with opengl and shaders</li>
-                <li><a href="https://github.com/cpp-toolbox/mwe_texture_atlas">mwe texture atlas</a> - a system for working with texture atlases through a simple json format</li>
-                <li><a href="https://github.com/cpp-toolbox/mwe_vertex_geometry">mwe vertex geometry</a> - a minimal place to view 3d geometry, uses a noclip fps camera</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_model_loading">mwe model loading</a> - model loading with noclip 3d character controller</li>
-                <li><a href="https://github.com/cpp-toolbox/mwe_model_loading_lighting">mwe model loading lighting</a> - same as above with lighting</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_font_rendering">mwe font rendering</a> - demonstrates font rendering with freetype fonts</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_physics_world_with_character">mwe physics world with character</a> - demonstrates a 3d world with a character that can be controlled with mouse and keyboard (Jolt Physics)</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_sound_world_with_character">mwe sound world with character</a> - demonstrates a 3d world with positional sound with a character which can be controlled with mouse and keyboard (openal)</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_networking">mwe networking</a> - basic network setup with enet</li>
-                <li><a href="https://github.com/opengl-toolbox/mwe_networked_physics_world_with_character">mwe networked physics world with character</a> - demonstrates a client-server network model using enet, supports connections and renders other players on the map</li>
-            </ul>
-        </fieldset>
-
-        <fieldset>
             <legend><h2><a href="infrastructure.html">Infrastructure</a></h2></legend>
             <p>We've built up many small scripts which make working within this ecosystem a lot nicer, most of these scripts are written in python</p>
         </fieldset>
-        
-        <br>
 
+        <fieldset>
+            <legend><h2>Roadmap</h2></legend>
+            <h3>ongoing development</h3>
+            <ul>
+                <li>a system which will cull objects (such as lights) so they don't get added to the draw call</li>
+                <li>scripted event system</li>
+                <li>animation management system</li>
+            </ul>
+            <h3>upcoming development</h3>
+            <ul>
+                <li>a networked mouth smoothing system</li>
+                <li>a model loading application with a file browser</li>
+                <li>a networked mouth smoothing system</li>
+            </ul>
+        </fieldset>
+        
     </div>
 </body>
 </html>

@@ -58,6 +58,22 @@
         <p>
             A scripted event is the exact same thing but in the context of a game engine where you're trying to amke a realistic scene and it requires that interact with multiple sub-systems and synchronize their activation. With such a system you can handle reload animations, sord swings, explosions, cutscenes, menus and anything that might need to run on its own without having to be brought to life via some in-game callbacks.
         </p>
+        <h2>the common game rendering pipeline</h2>
+        <p>
+            Suppose we had ball which is moving in the air, as a beginner in opengl, you might compute the absolute position of each vertex of the ball overtime and upload those new vertices each time to the GPU, and while this might work fine in a smaller game, if you did this each time the camera moved on the geometry of a map, it would quickly become the bottleneck of your rendering.
+        </p>
+        <p>
+            Since you've probably already run into the CWL v matrix transformation you know that it's way better to instead just rotate the entire world around the camera which solves the problem above as now you just upload the vertex position data to the gpu once, and then each time only the matrix which holds the yaw and pitch of the camera will change.
+        </p>
+        <p>
+            If you continue with this idea it can become clear that the best way to render all of the objects in your scene is to instead have the transform matrix for each object, keep the vertex positions stationary, and instead just upload the changing matrix each frame, which would reduce the bottleneck.
+        </p>
+        <p>
+            Since you understand the graphics pipeline then you know our shaders work per-vertex and thus for each vertex we need to know which matrix should be transforming it, the most naive way of doing this would be copy pasting the same model matrix for each vertex in an object and passing that into the shader to have access, this is a horrible idea because for each vertex of 3 floats you're now storing 16 extra floats which is more than a x4 increase in data going in as compared to just re-uploading all the vertices in their new positions, so clearly this new approach is incorrect.
+        </p>
+        <p>
+            Since cpp-toolbox is currently supporting opengl3.3 as we want support on old machines, then since we don't have access to ssbo's then we would only have ubo's at our disposal, but even then on my machine I'm typing this on right now I only have space for 1024 mat4's in a ubo which is cutting it pretty close for comfort when you potentialy have a couple particle emitters running at any time. Therefore an approach that we can take is one of storing matrices into texture arrays. 
+        </p>
     </div>
 </body>
 </html>

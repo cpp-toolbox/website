@@ -10,7 +10,7 @@ from fsweb.html_utils.main import  BLANK_HTML_FILE, add_text_to_header_and_body_
 # GitHub base URL for projects
 GITHUB_BASE_URL = "https://raw.githubusercontent.com/cpp-toolbox"
 
-def read_projects_from_file(filename: str) -> List[str]:
+def get_projects_from_file(filename: str) -> List[str]:
     """Read project names from a text file, each project on a new line."""
     with open(filename, "r") as file:
         projects = [line.strip() for line in file if line.strip()]
@@ -125,7 +125,7 @@ def main():
     abs_path_to_subproject_file = os.path.abspath(os.path.join(script_dir, relative))
     subproject_directory = os.path.dirname(abs_path_to_subproject_file)
 
-    projects = read_projects_from_file(abs_path_to_subproject_file)
+    projects = get_projects_from_file(abs_path_to_subproject_file)
     tagged_projects = defaultdict(list)  # Dictionary to store tags and associated projects
     
     for project in projects:

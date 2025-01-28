@@ -1,0 +1,20 @@
+<p>
+    When working with the toolbox a common thing you'll want to do is get graphics up and going on a project, to set that up, go to your projects root directory and do the following
+</p>
+<pre>
+    <code>
+
+mkdir -p assets/shaders 
+git submodule git@github.com:cpp-toolbox/shaders.git assets/shaders 
+
+mkdir -p src/graphics/batcher 
+git submodule git@github.com:cpp-toolbox/batcher.git src/graphics/batcher 
+
+mkdir -p src/graphics/shader_cache
+git submodule git@github.com:cpp-toolbox/batcher.git src/graphics/shader_cache
+
+python scripts/sbpt/main.py src
+       
+git submodule update --init --recursive
+    </code>
+</pre>

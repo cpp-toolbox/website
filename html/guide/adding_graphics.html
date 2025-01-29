@@ -16,18 +16,18 @@ git submodule update --init --recursive
 </pre>
 <ul>
     <li>
-        Next compile your shaders:
+        Next setup the `shader_cache`
 <pre>
     <code>
-python assets/shaders/main.py assets/shaders/src/ assets/shaders/out
+python scripts/setup/graphics_systems.py --setup shader-cache
     </code>
 </pre>
     </li>
     <li>
-        Now validate your shaders, and generate the c++ code for the standard
+        If you plan on using the batcher then run
 <pre>
     <code>
-python src/graphics/shader_standard/main.py -sd assets/shaders/  -gc -gp
+python scripts/setup/graphics_systems.py --setup batcher
     </code>
 </pre>
     </li>

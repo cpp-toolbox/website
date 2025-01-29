@@ -18,12 +18,13 @@
     "wood": { "x": 0, "y": 0, "width": 150, "height": 150 }
   }
 }</code></p>
-<p>the above json file specifies the top left corner of each sub-texture with the specified width and height.</p>
+<p>the above json file specifies the top left corner of each sub-texture with the specified width and height. Note that measurements are done from the top left corner of the image which is the canonical measurement for images.</p>
 <h1>warning</h1>
 <p>Also be sure to include this in exactly one other source file or else it will not work</p>
 <p>```cpp</p>
 <h1>define STB_IMAGE_IMPLEMENTATION</h1>
 <p>```</p>
+<p>Also note that you must have an active opengl context before creating this class.</p>
 <h2><a href='https://github.com/cpp-toolbox/texture_atlas'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/texture_atlas.git</h2>

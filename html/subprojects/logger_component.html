@@ -9,7 +9,25 @@
 <body>
 <div class="wrapper">
 <h1>logger_component</h1>
-<p>a class that can be composed with others to add logging functionality with spdlog</p>
+<p>a class that can be composed with others to add logging functionality with spdlog, the reason this exists is to simply abstract away working with spdlog and creating a new logger, that way when you're working on something and you want logging you simply use this rather than having to think about the logging implementation to save time.</p>
+<h2>usage</h2>
+<p>If you want to add a logger to a particular subsystem, you must first make some spdlog sinks:
+```cpp
+  // Create console and file sinks
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    console_sink-&gt;set_level(spdlog::level::debug);</p>
+<pre><code>auto file_sink = std::make_shared&lt;spdlog::sinks::basic_file_sink_mt&gt;("network_logs.txt", true);
+file_sink-&gt;set_level(spdlog::level::info);
+
+std::vector&lt;spdlog::sink_ptr&gt; sinks = {console_sink, file_sink};
+</code></pre>
+<p><code>Now that you have your sinks, you can create a logger component:</code>cpp
+    logger_component = LoggerComponent("network", sinks);
+<code>Then in your logic you can do this:</code>cpp
+      if (logger_component.logging_enabled) {
+          logger_component.get_logger()-&gt;error("An error occurred while initializing ENet.");
+      }
+```</p>
 <h2><a href='https://github.com/cpp-toolbox/logger_component'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/logger_component.git</h2>

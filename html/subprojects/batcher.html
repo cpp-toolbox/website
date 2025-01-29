@@ -12,9 +12,61 @@
 <p>a class which helps manage batching over shaders, note that there are no source files stored, but instead must be generated with the python script.</p>
 <h2>setup</h2>
 <ol>
-<li>the batcher reles on the shader standard project and you must link in <code>shader_standard.py</code> and <code>standard.py</code> in to this directory for it to operate correctly</li>
-<li>run <code>batcher.py</code> and generate the shaders you need</li>
+<li>the batcher relies on the shader standard project and you must link in <code>shader_standard.py</code> and <code>standard.py</code> in to this directory for it to operate correctly</li>
+<li>run <code>batcher.py</code> and generate the batchers for each shaders you need</li>
 </ol>
+<p><strong>WARNING</strong>: the <code>queue_draw</code> call parameter list order is generated based on the order of vertex attribute variables encountered in the shader file, thus if you change the order, your <code>queue_draw</code> calls will break, keep this in mind.</p>
+<h2>how it works</h2>
+<p>the purpose of the batcher is to reduce the number of draw calls made by opengl, the method we employ for doing that is allowing the programmer to make <code>queue_draw</code> calls that don't actually draw anything, but attempt to store the data into a bunch of pre-allocated buffers, additionally if the user is requested a <code>queue_draw</code> with the same information again, then the data that is already stored should be used instead of re-uploading that data.</p>
+<h3>draw object ids</h3>
+<p>A draw object is a collection of information required to draw something. Most of the time all of this information moves together through space somehow, which is to say that it only needs one <code>local_to_world</code> matrix associated with all the data. When you draw something, you must submit an object id of what you want to draw, along with all the information to draw it, if the object id is already cached, it will not re-upload the information.</p>
+<p>An object id is a unique id associated with a collection of drawing information, which for the most part should stay static</p>
+<h2>example</h2>
+<p>Since the batcher is generated code, it's good to look at some real code which is immediately readable to understand how this sytem works, <code>batcher_visualization.py</code> was created for that purpose, and here is the output: </p>
+<p><code>$ python batcher_visualization.py 
+queuing up aaa with id: id1 for printing
+Adding string with ID 'id1': aaa
+Array after adding string with ID 'id1'
+Array: ['a', 'a', 'a', '', '', '', '', '', '', '']
+Metadata: {'id1': (0, 3)}
+queuing up bbb with id: id2 for printing
+Adding string with ID 'id2': bbb
+Array after adding string with ID 'id2'
+Array: ['a', 'a', 'a', 'b', 'b', 'b', '', '', '', '']
+Metadata: {'id1': (0, 3), 'id2': (3, 3)}
+=== PRINTING EVERYTHING ===
+Retrieving string with ID 'id1'
+aaa
+Retrieving string with ID 'id2'
+bbb
+queuing up cc with id: id3 for printing with replacement
+Adding string with ID 'id3': cc
+Array after adding string with ID 'id3'
+Array: ['a', 'a', 'a', 'b', 'b', 'b', 'c', 'c', '', '']
+Metadata: {'id1': (0, 3), 'id2': (3, 3), 'id3': (6, 2)}
+queuing up ddd with id: id1 for printing with replacement
+Adding string with ID 'id1': ddd
+Removed old string with ID 'id1'.
+Array after adding string with ID 'id1'
+Array: ['d', 'd', 'd', 'b', 'b', 'b', 'c', 'c', '', '']
+Metadata: {'id2': (3, 3), 'id3': (6, 2), 'id1': (0, 3)}
+=== PRINTING EVERYTHING ===
+Retrieving string with ID 'id3'
+cc
+Retrieving string with ID 'id1'
+ddd</code></p>
+<p>To understand the batcher do this conversion
+- Fixed Array -&gt; Vertex Buffer Object
+- Strings -&gt; Geometry you want to draw
+- Printing -&gt; Drawing</p>
+<h2>todo</h2>
+<ul>
+<li>We need to allow more operations for an object id, such as clearing information out, forcing it to upload new data, and so on, as well as the ability to not cache something, or to remove it later on.</li>
+<li>also for the most part we just update the model matrices, so there's no need to overwrite all infomration, perhaps we can pass in null for those and that way we only update what is required.</li>
+<li>also for text, we need to assign each character a unique id, and then we just have to submit what we need, in this case we know the same drawing geometry will be re-used throughout the lifetime of our program so its fine to upload that at the start, but for ui elements, I'm not sure, also if a ui element ever got resized, we would want to clobber/replace that object id, or just use a transform for it I think.</li>
+<li>the batcher needs to allow for the clearing out of data possibly, this only needs to be done if we start running out of space in our buffers, don't look into that until it occurs</li>
+<li>the batcher possibly needs to allow for updating a single component of an existant object such as just the normals or something, don't have a usecase yet though</li>
+</ul>
 <h2><a href='https://github.com/cpp-toolbox/batcher'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/batcher.git</h2>

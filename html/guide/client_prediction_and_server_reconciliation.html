@@ -1,0 +1,66 @@
+<p>
+    The topic of the cpsr (client prediction and server reconciliation) has many things to consider, so many so that when designing the algorithm, it sometimes get to the point where you can't hold the entire algorithm in your head, additionally the fact that the algorithm is split over the server and client can make it hard to figure out what's going on sometimes. In this article we'll try to have a comprehensive discussion about the algorithm.
+</p>
+
+<p>
+    I also want to make the comment that just understanding how this algorithm works doesn't mean you can correctly implement it at all with good accuracy, just starting to implement it will start uncovering more and more problems you never considered.
+</p>
+
+<h2>the setup</h2>
+<p>Suppose you have a client and server setup, our goal is to give the player the highest degree of freedom to express themselves in the game. In a game with more game updates or ticks per second, you can be more expressive because whenever you try and do something, the game will pick up on that faster.</p>
+
+<p>Our goal is to create a CPSR system which can allow the client to give the user a crisp experience where they will feel that they are taking advantage of their hardware, and attempt to actually make that a reality. The reason why making that a reality is harder than making it feel that way is because there are solutions to this problem which only give the user the illusion of more control.</p>
+
+<p>
+    Specifically, we'll make the client and server both have a main loop which runs at 512 Hz. We want to take advantage of this frequency on the client, but at the same time, we don't want to send out at 512 Hz because I believe that is too fast (needs to be tested).
+</p>
+
+<h2>the algorithm</h2>
+<p>
+    The CPSR algorithm is a simple algorithm in theory which clobbers a client's state with the authoritative server state and then corrects for this by reapplying client inputs.
+</p>
+
+<h2>client and server need similar time deltas</h2>
+<p>
+    Initially, the algorithm seems simple until you actually start understanding how inputs are processed. Usually, a single input is combined with a delta time to produce new game state via what we call the process function. Even if both the client and server theoretically are running at the same rate, the measured deltas between ticks will be different on the client and server. Thus, an input processed on the client resulting in some game state will most likely yield a game state with a slight difference on the server because the server's measured delta time will be different.
+</p>
+
+<p>
+    This shows us that given the same input on two different machines, if we want the resulting game state to be as similar as possible between the two machines, we must be sure to keep the time deltas as similar as possible.
+</p>
+
+<h2>isn't that a problem?</h2>
+<p>
+    We already mentioned that we want to take advantage of the 512 Hz on the client. One idea is that we sample the input at this rate and combine them each with their own unique time deltas, which will be approximately 1/512 seconds. If we do so, then we will be processing our deltas on the client at a much faster rate, and with much smaller deltas.
+</p>
+
+<p>
+    The first thing to note is that since we're only sending out at 60 Hz, then on average about 8 of these inputs would have to be sent out all together. This in itself can be problematic because once those get to the server, we have to decide what we're going to do with them.
+</p>
+
+<p>
+    The first problem is that if we just send them over to the server in a bundle, how do we unpack this bundle? Do we consume one off the top for each server tick? This would theoretically work since the production and consume rates are equal, but then the server would "catch up" at a much slower rate to what the current game state would be on the client, thus making the game feel laggy. Instead, it might make more sense to process them all at once. But this would be slightly strange because for most physics ticks, there would be no inputs to process at all.
+</p>
+
+<p>
+    In either of the discussed cases, we have to make a bad decision. We either have to delay the server state or have a protocol in place when multiple updates come in at once.
+</p>
+
+<h2>update isolation</h2>
+<p>
+    Another consideration that has to be made in such a system is how the process function operates. If your system is a physics engine, then when you tick the physics engine, it’s usually the case that all other entities get moved along in time. So if you were to pass in a bunch of update-time deltas for each client when the server would process those, it would inadvertently process all the other entities, moving them along in time, causing unintended effects.
+</p>
+
+<p>
+    In order to even consider the solution of passing the update-time delta pairs, you need to be sure that the system you're updating allows for isolation-based updates.
+</p>
+
+<h2>the way you update has an effect</h2>
+<p>
+    When running the CPSR algorithm, there are many types of data that you might want to run CPSR on. The type of data you want to run it on depends on what type of solutions there are.
+</p>
+
+<h2>delay and interpolate</h2>
+<p>
+    The first approach you could do to take advantage of the 512 Hz is to send out our messages at a rate of 60 Hz. So we update our player's position at 512 Hz using the isolated physics tick update on that player. Additionally, we can batch the player's inputs together into larger updates. We do this by collecting up updates that...
+</p>

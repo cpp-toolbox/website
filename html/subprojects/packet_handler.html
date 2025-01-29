@@ -9,8 +9,8 @@
 <body>
 <div class="wrapper">
 <h1>packet_handler</h1>
-<p>to use the packet handler you have to create a subproject called packet_types that defines a struct as follows:</p>
-<p><code>packet_type.hpp</code>
+<p>In the following example we will show how to use the packet handler in the context of a client server game. First you have to create a subproject called packet_types that defines a struct as follows:</p>
+<p><code>packet_type.hpp</code> (client and server):
 <code>cpp
 enum class PacketType : uint8_t {
     UNIQUE_CLIENT_ID,
@@ -18,7 +18,53 @@ enum class PacketType : uint8_t {
     GAME_UPDATE_ONE_TIME_EVENTS,
     USER_MESSAGES,
 };</code>
-when you run <code>sbpt</code> it will correctly include it.</p>
+when you run <code>sbpt</code> it will correctly include it. Additionally both the client and server must have the same packet types available.</p>
+<p>Next when constructing a <code>PacketHandler</code> you must create a map like this (client):
+```cpp
+std::unordered_map<PacketType, PacketHandler::HandlerFunction> initialize_packet_handlers() {
+    std::unordered_map<PacketType, PacketHandler::HandlerFunction> handlers;</p>
+<pre><code>handlers[PacketType::UNIQUE_CLIENT_ID] = [](const void* data) {
+    const UniqueClientIDPacket* packet = reinterpret_cast&lt;const UniqueClientIDPacket*&gt;(data);
+    handle_unique_client_id_packet(*packet);
+};
+
+handlers[PacketType::GAME_UPDATE_POSITIONS] = [](const void* data) {
+    const PacketHeader* header = reinterpret_cast&lt;const PacketHeader*&gt;(data);
+    size_t num_positions = header-&gt;size_of_data_without_header / sizeof(PositionArray);
+
+    GameUpdatePositionsPacket packet;
+    packet.header = *header;
+    packet.positions.resize(num_positions);
+    std::memcpy(packet.positions.data(), reinterpret_cast&lt;const char*&gt;(data) + sizeof(PacketHeader), num_positions * sizeof(PositionArray));
+
+    handle_game_update_positions_packet(packet);
+};
+
+return handlers;
+</code></pre>
+<p>}</p>
+<p>```</p>
+<p>and pass it in when you construct the packet handler, this will allow it to automatically run the correct callback function whenever a packet of that type is received, to make this happen you usually want to do something like this: 
+<code>cpp
+        std::cout &lt;&lt; "tick" &lt;&lt; "\n";
+        std::vector&lt;PacketWithSize&gt; packets_since_last_tick = network.get_network_events_received_since_last_tick();
+        for (const auto&amp; packet : packets_since_last_tick) {
+            std::cout &lt;&lt; "Received packet of size: " &lt;&lt; packet.size &lt;&lt; "\n";
+        }
+        packet_handler.handle_packets(packets_since_last_tick);</code></p>
+<p>To send over packets you should do something similar to this: 
+```cpp
+        server.get_network_events_since_last_tick();</p>
+<pre><code>    GameUpdatePositionsPacket packet = toggle ? create_mock_game_update_positions_packet_2() : create_mock_game_update_positions_packet_1();
+
+    size_t packet_size = sizeof(PacketHeader) + packet.positions.size() * sizeof(PositionArray);
+    std::vector&lt;char&gt; buffer(packet_size);
+    std::memcpy(buffer.data(), &amp;packet.header, sizeof(PacketHeader));
+    std::memcpy(buffer.data() + sizeof(PacketHeader), packet.positions.data(), packet.positions.size() * sizeof(PositionArray));
+
+    server.reliable_broadcast(buffer.data(), buffer.size());
+</code></pre>
+<p>```</p>
 <h2><a href='https://github.com/cpp-toolbox/packet_handler'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/packet_handler.git</h2>

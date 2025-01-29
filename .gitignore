@@ -1,1 +1,4 @@
 subprojects/sbpt_venv
+fsweb_generated_dir
+fh_generated_html
+.base_dir_last_modified.json

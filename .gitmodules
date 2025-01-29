@@ -7,3 +7,6 @@
 [submodule "scripts/fs_utils"]
 	path = scripts/fs_utils
 	url = git@github.com:py-garden/fs_utils.git
+[submodule "scripts/fast-html"]
+	path = scripts/fast-html
+	url = git@github.com:simple-web-tools/fast-html.git

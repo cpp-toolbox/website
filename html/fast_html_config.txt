@@ -1,0 +1,5 @@
+[settings]
+custom-template-conversion-file = html/fast_html_template_conversion.py
+base-template-file = html/cpp_tbx_template.html
+base-dir = html/
+gen-dir = fh_generated_html

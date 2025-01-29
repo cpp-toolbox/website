@@ -9,6 +9,40 @@
 <body>
 <div class="wrapper">
 <h1>ui</h1>
+<p>We need to turn this into a little bit like html, we need to add divs and ids so that we can grab oids of the objects and then do operations on them, because right now we have ways to get things, but no ways of getting them back</p>
+<h2>usage</h2>
+<p>```cpp
+ filesystem_browser.process_mouse_position(ndc_mouse_pos);</p>
+<p>if (mouse_clicked_signal.is_just_on()) {
+    filesystem_browser.process_mouse_just_clicked(ndc_mouse_pos);
+}</p>
+<p>for (auto &amp;cb : filesystem_browser.get_colored_boxes()) {
+    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
+        cb.id, cb.ivpsc.indices, cb.ivpsc.xyz_positions, cb.ivpsc.rgb_colors);
+}</p>
+<p>for (auto &amp;tb : filesystem_browser.get_text_boxes()) {
+    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
+        tb.id, tb.background_ivpsc.indices, tb.background_ivpsc.xyz_positions,
+        tb.background_ivpsc.rgb_colors);</p>
+<pre><code>batcher.transform_v_with_signed_distance_field_text_shader_batcher.queue_draw(
+    tb.id, tb.text_drawing_data.indices, tb.text_drawing_data.xyz_positions,
+    tb.text_drawing_data.texture_coordinates, tb.modified_signal.has_just_changed());
+</code></pre>
+<p>}</p>
+<p>for (auto &amp;tb : filesystem_browser.get_clickable_text_boxes()) {
+    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
+        tb.id, tb.ivpsc.indices, tb.ivpsc.xyz_positions, tb.ivpsc.rgb_colors,
+        tb.modified_signal.has_just_changed());</p>
+<pre><code>batcher.transform_v_with_signed_distance_field_text_shader_batcher.queue_draw(
+    tb.id, tb.text_drawing_data.indices, tb.text_drawing_data.xyz_positions,
+    tb.text_drawing_data.texture_coordinates);
+</code></pre>
+<p>}</p>
+<p>glDisable(GL_DEPTH_TEST);
+batcher.absolute_position_with_colored_vertex_shader_batcher.draw_everything();
+batcher.transform_v_with_signed_distance_field_text_shader_batcher.draw_everything();
+glEnable(GL_DEPTH_TEST);</p>
+<p>```</p>
 <h2><a href='https://github.com/cpp-toolbox/ui'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/ui.git</h2>
@@ -18,6 +52,8 @@
 	<li><a href="vertex_geometry.html">vertex_geometry</a></li>
 	<li><a href="font_atlas.html">font_atlas</a></li>
 	<li><a href="draw_info.html">draw_info</a></li>
+	<li><a href="unique_id_generator.html">unique_id_generator</a></li>
+	<li><a href="temporal_binary_signal.html">temporal_binary_signal</a></li>
 </ul>
 </div>
 

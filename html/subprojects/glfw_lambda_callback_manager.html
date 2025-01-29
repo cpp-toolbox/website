@@ -15,6 +15,13 @@
 <p>Another solution is that in main.cpp you could create lambda functions which are global and then the callbacks can access the lambdas, and so you don't have to mess with the user pointer, but now your lambdas are global which we didn't want to do.</p>
 <p>Another thought is that maybe the lambdas could be defined in main(), but that provides a problem because we can't define c style functions inside of other c style functions, and so we can never make our callbacks use the lambdas because they would have to be defined outside of this function call, but then the lambdas would already be removed from the stack.</p>
 <p>This subproject provides a solution by encapsulating the lambdas in a class, and then providing class members which are regular c style functions which call the lambdas.</p>
+<h2>usage</h2>
+<p><code>cpp
+    std::function&lt;void(unsigned int)&gt; char_callback = [](unsigned int _) {};
+    std::function&lt;void(int, int, int, int)&gt; key_callback = [](int _, int _1, int _2, int _3) {};
+    std::function&lt;void(double, double)&gt; mouse_pos_callback = [](double _, double _1) {};
+    std::function&lt;void(int, int, int)&gt; mouse_button_callback = [](int _, int _1, int _2) {};
+    GLFWLambdaCallbackManager glcm(window, char_callback, key_callback, mouse_pos_callback, mouse_button_callback);</code></p>
 <h2><a href='https://github.com/cpp-toolbox/glfw_lambda_callback_manager'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/glfw_lambda_callback_manager.git</h2>

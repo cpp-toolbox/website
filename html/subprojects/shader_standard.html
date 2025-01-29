@@ -10,6 +10,99 @@
 <div class="wrapper">
 <h1>shader_standard</h1>
 <p>a system which enforces a standard for naming variables in shaders, this is so that we can have systems such as the shader cache, and it can integrate much easier with more assumptions.</p>
+<h2>catalog</h2>
+<p>Note that for each shader program listed here you can explore <code>standard.py</code> to specifically to see what shader files are used to build it.</p>
+<h2>terminology</h2>
+<ul>
+<li><code>TEXTURE</code>: the shader will use textures</li>
+<li><code>LIGHTS</code>: the shader employs lighting</li>
+<li><code>UBOS</code>: the shader use uniform buffer objects to store data (UBOS 1024) means that array has size 1024.</li>
+<li><code>TEXTURE_PACKER</code>: the shader integrates with the texture packer architecture</li>
+<li><code>CWL_V_TRANSFORMATION</code>: the shader uses the matrices <code>camera_to_clip</code>, <code>world_to_camera</code> and <code>local_to_world</code> in the form <code>CVL v</code> where <code>v</code> is a position in space and <code>CWL</code> is the product of the matrices.</li>
+<li><code>camera_to_clip</code>: the transformation which takes the world as seen from the camera and applies effects like perspective to the view, since this is the last applied transform the resulting points are interepreted in clip space</li>
+<li><code>world_to_camera</code>: the transformation which positions the world to make the camera be at the origin</li>
+<li><code>local_to_world</code>: usually objects have thieir origin set to the center of the object, ie, when imported they will be at the origin, this matrix positions the model in the right place and correct orientiation</li>
+<li><code>RIGGED_AND_ANIMATED</code>: the shader uses skeletal animation and requires bone weights along with animation matrices to operate correctly</li>
+</ul>
+<h2>stuff that applies to many shaders</h2>
+<h3>TEXTURE PACKERS</h3>
+<p>For every texture packer you need to at least assign the bounding boxes: </p>
+<p>```cpp
+    TexturePacker texture_packer(textures_directory, output_dir, container_side_length);</p>
+<pre><code>shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED,
+                         ShaderUniformVariable::PACKED_TEXTURE_BOUNDING_BOXES,
+                         texture_packer.texture_index_to_bounding_box);
+</code></pre>
+<p>```</p>
+<p>the texture packer allows you to add new textures dynamically when you do a call to regenerate, you will have to refresh all existing geometry though, see how observatory does this until this is better documented.</p>
+<h3>CWL_V SHADERS</h3>
+<p>You'll want to update their uniforms one time per frame like this: </p>
+<p><code>cpp
+shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::CAMERA_TO_CLIP, projection);
+shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::WORLD_TO_CAMERA, origin_view); shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::LOCAL_TO_WORLD, local_to_world);</code></p>
+<h3>UBO SHADERS</h3>
+<p>First assign all your matrices like this as a uniform buffer object
+```cpp
+GLuint ltw_matrices_gl_name;
+glm::mat4 ltw_matrices[1024];</p>
+<p>// initialize all matrices to identity matrices
+for (int i = 0; i &lt; 1024; ++i) {
+    ltw_matrices[i] = glm::mat4(1.0f);
+}</p>
+<p>glGenBuffers(1, &amp;ltw_matrices_gl_name);
+glBindBuffer(GL_UNIFORM_BUFFER, ltw_matrices_gl_name);
+glBufferData(GL_UNIFORM_BUFFER, sizeof(ltw_matrices), ltw_matrices, GL_STATIC_DRAW);
+glBindBufferBase(GL_UNIFORM_BUFFER, 0, ltw_matrices_gl_name);
+```</p>
+<p>Then feel free to modify the <code>ltw_matrices</code> variable, each object you draw will contain an index into this array, and thus all you have to do is be sure you put the transform matrix you want to apply to a specific object in the right place, and then one time per frame be sure to upload the new matrices: </p>
+<p><code>cpp
+glBindBuffer(GL_UNIFORM_BUFFER, ltw_matrices_gl_name);
+glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ltw_matrices), ltw_matrices);
+glBindBuffer(GL_UNIFORM_BUFFER, 0);</code></p>
+<h2>notes for specific shaders</h2>
+<h4>TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</h4>
+<p>To set up this shader be sure to do the following:
+```cpp
+void setup_sdf_shader_uniforms(ShaderCache &amp;shader_cache) {
+    auto text_color = glm::vec3(0.5, 0.5, 1);
+    float char_width = 0.5;
+    float edge_transition = 0.1;</p>
+<pre><code>shader_cache.use_shader_program(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT);
+
+shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT, ShaderUniformVariable::TRANSFORM,
+                         glm::mat4(1.0f));
+
+shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT, ShaderUniformVariable::RGB_COLOR,
+                         text_color);
+
+shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT,
+                         ShaderUniformVariable::CHARACTER_WIDTH, char_width);
+
+shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT,
+                         ShaderUniformVariable::EDGE_TRANSITION_WIDTH, edge_transition);
+shader_cache.stop_using_shader_program();
+</code></pre>
+<p>}
+```</p>
+<h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_1024_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
+<h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_2048_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
+<h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_4096_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
+<h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_WITH_TEXTURES</h3>
+<h3>TEXTURE_PACKER_CWL_V_TRANSFORMATION_UBOS_1024_AMBIENT_AND_DIFFUSE_LIGHTING</h3>
+<h3>TEXTURE_PACKER_CWL_V_TRANSFORMATION_UBOS_1024_MULTIPLE_LIGHTS</h3>
+<h3>TEXTURE_PACKER_CWL_V_TRANSFORMATION_UBOS_1024</h3>
+<h3>RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_WITH_TEXTURES</h3>
+<h3>CWL_V_TRANSFORMATION_WITH_SOLID_COLOR</h3>
+<h3>CWL_V_TRANSFORMATION_USING_UBOS_WITH_SOLID_COLOR</h3>
+<h3>CWL_V_TRANSFORMATION_WITH_TEXTURES</h3>
+<h3>TRANSFORM_V_WITH_TEXTURES</h3>
+<h3>CWL_V_TRANSFORMATION_WITH_TEXTURES_AMBIENT_LIGHTING</h3>
+<h3>CWL_V_TRANSFORMATION_WITH_TEXTURES_AMBIENT_AND_DIFFUSE_LIGHTING</h3>
+<h3>SKYBOX</h3>
+<h3>ABSOLUTE_POSITION_WITH_SOLID_COLOR</h3>
+<h3>TEXT</h3>
+<h3>ABSOLUTE_POSITION_WITH_COLORED_VERTEX</h3>
+<h3>ABSOLUTE_POSITION_TEXTURED</h3>
 <h2><a href='https://github.com/cpp-toolbox/shader_standard'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/shader_standard.git</h2>

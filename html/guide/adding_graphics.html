@@ -3,18 +3,39 @@
 </p>
 <pre>
     <code>
+mkdir -p assets/
+git submodule add git@github.com:cpp-toolbox/shaders.git assets/shaders 
 
-mkdir -p assets/shaders 
-git submodule git@github.com:cpp-toolbox/shaders.git assets/shaders 
-
-mkdir -p src/graphics/batcher 
-git submodule git@github.com:cpp-toolbox/batcher.git src/graphics/batcher 
-
-mkdir -p src/graphics/shader_cache
-git submodule git@github.com:cpp-toolbox/batcher.git src/graphics/shader_cache
+mkdir -p src/graphics/
+git submodule add git@github.com:cpp-toolbox/batcher.git src/graphics/batcher 
+git submodule add git@github.com:cpp-toolbox/shader_cache.git src/graphics/shader_cache
 
 python scripts/sbpt/main.py src
-       
 git submodule update --init --recursive
     </code>
 </pre>
+<ul>
+    <li>
+        Next compile your shaders:
+<pre>
+    <code>
+python assets/shaders/main.py assets/shaders/src/ assets/shaders/out
+    </code>
+</pre>
+    </li>
+    <li>
+        Now validate your shaders, and generate the c++ code for the standard
+<pre>
+    <code>
+python src/graphics/shader_standard/main.py -sd assets/shaders/  -gc -gp
+    </code>
+</pre>
+    </li>
+</ul>
+
+<p>
+
+</p>
+<p>
+    Next be sure to grab <a href="https://conan.io/center/recipes/glfw">glfw</a> and <a href="https://conan.io/center/recipes/glad">glad</a>
+</p>

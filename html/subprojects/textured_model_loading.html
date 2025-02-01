@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>textured_model_loading - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>Info</h1>
 <p>Code which loads in obj models with textures using assimp to be rendered with opengl. </p>
 <p>WARNING: You must following the variable naming guidelines defined in the <code>shaders</code> submodule or else nothing will be rendered
@@ -21,27 +18,31 @@ as the code that binds to the vertex attributes will get the wrong variable</p>
 <li><a href="https://github.com/nothings/stb">stb</a> - for loading images</li>
 </ul>
 <h1>CMake</h1>
-<p>```
-...</p>
-<h1>GLM: opengl mathematics</h1>
-<p>include_directories(external_libraries/glm)
-add_subdirectory(external_libraries/glm)</p>
-<h1>ASSIMP: Asset Importer</h1>
-<h1>only use obj to speed up compilation</h1>
-<p>set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
+<div class="codehilite"><pre><span></span><code>...
+
+<span class="gh">#</span> GLM: opengl mathematics
+include_directories(external_libraries/glm)
+add_subdirectory(external_libraries/glm)
+
+<span class="gh">#</span> ASSIMP: Asset Importer
+<span class="gh">#</span> only use obj to speed up compilation
+set(ASSIMP_INSTALL OFF CACHE BOOL &quot;&quot; FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL &quot;&quot; FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL &quot;&quot; FORCE)
+set(ASSIMP_NO_EXPORT OFF CACHE BOOL &quot;&quot; FORCE)
+set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL &quot;&quot; FORCE)
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL &quot;&quot; FORCE)
+set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL &quot;&quot; FORCE)
 include_directories(external_libraries/assimp/include)
-add_subdirectory(external_libraries/assimp)</p>
-<h1>STB_H: single file libraries</h1>
-<p>include_directories(external_libraries/stb)</p>
-<p>... </p>
-<p>target_link_libraries(your_project_name ... assimp)
-```</p>
+add_subdirectory(external_libraries/assimp)
+
+<span class="gh">#</span> STB_H: single file libraries
+include_directories(external_libraries/stb)
+
+... 
+
+target_link_libraries(your_project_name ... assimp)
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/textured_model_loading'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/textured_model_loading.git</h2>
@@ -51,7 +52,6 @@ add_subdirectory(external_libraries/assimp)</p>
 	<li><a href="client_systems_namespace.html">client_systems_namespace</a></li>
 	<li><a href="model_loading.html">model_loading</a></li>
 </ul>
-</div>
 
 </body>
 </html>

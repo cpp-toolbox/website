@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>text_renderer - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>Info</h1>
 <p>utilities for font rederering as well as text rendering</p>
 <h1>Depdendencies</h1>
@@ -17,17 +14,24 @@
 <li><a href="https://github.com/opengl-toolbox/shader_pipeline">shader pipeline</a></li>
 </ul>
 <h1>CMake</h1>
-<p>```
-...</p>
-<h1>GLM: opengl mathematics</h1>
-<p>include_directories(external_libraries/glm)
-add_subdirectory(external_libraries/glm)</p>
-<h1>FreeType: font rendering</h1>
-<p>add_subdirectory(external_libraries/freetype)
-include_directories(external_libraries/freetype/include)</p>
-<p>... </p>
-<p>target_link_libraries(your_project_name ... freetype)
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="o">...</span>
+
+
+<span class="err">#</span><span class="w"> </span><span class="nx">GLM</span><span class="p">:</span><span class="w"> </span><span class="nx">opengl</span><span class="w"> </span><span class="nx">mathematics</span>
+
+<span class="nx">include_directories</span><span class="p">(</span><span class="nx">external_libraries</span><span class="o">/</span><span class="nx">glm</span><span class="p">)</span>
+<span class="nx">add_subdirectory</span><span class="p">(</span><span class="nx">external_libraries</span><span class="o">/</span><span class="nx">glm</span><span class="p">)</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nx">FreeType</span><span class="p">:</span><span class="w"> </span><span class="nx">font</span><span class="w"> </span><span class="nx">rendering</span>
+
+<span class="nx">add_subdirectory</span><span class="p">(</span><span class="nx">external_libraries</span><span class="o">/</span><span class="nx">freetype</span><span class="p">)</span>
+<span class="nx">include_directories</span><span class="p">(</span><span class="nx">external_libraries</span><span class="o">/</span><span class="nx">freetype</span><span class="o">/</span><span class="nx">include</span><span class="p">)</span>
+
+
+<span class="o">...</span><span class="w"> </span>
+
+<span class="nx">target_link_libraries</span><span class="p">(</span><span class="nx">your_project_name</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="nx">freetype</span><span class="p">)</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/text_renderer'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/text_renderer.git</h2>
@@ -36,7 +40,6 @@ include_directories(external_libraries/freetype/include)</p>
 <ul>
 	<li><a href="shader_cache.html">shader_cache</a></li>
 </ul>
-</div>
 
 </body>
 </html>

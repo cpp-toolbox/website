@@ -28,7 +28,11 @@ def fetch_file(url):
 
 def markdown_to_html(md_content):
     """Convert Markdown content to HTML."""
-    return markdown.markdown(md_content)
+    html = markdown.markdown(
+        md_content,
+        extensions=['fenced_code', 'codehilite']
+    )
+    return html
 
 def parse_sbpt_ini(ini_content):
     """Parse sbpt.ini content and retrieve dependencies and tags."""
@@ -54,12 +58,6 @@ def create_html(project_name, md_html, dependencies):
     html_header_content = ""
     html_body_content = ""
     
-    # Add the stylesheet link and title with GitHub link, relative because github pages bad with /project/index.html takes you back out...
-    html_header_content += f'<link rel="stylesheet" href="../cjm-css/styles.css">\n'
-    html_header_content += f'<title>{project_name} - GitHub</title>\n'
-
-    html_body_content += f'<div class="wrapper">\n'
-    
     # Add the markdown content converted to HTML
     html_body_content += md_html
     
@@ -73,9 +71,6 @@ def create_html(project_name, md_html, dependencies):
             dep_link = f"{dep}.html"
             html_body_content += f'\t<li><a href="{dep_link}">{dep}</a></li>\n'
         html_body_content += "</ul>\n"
-    
-    # Close the wrapper div
-    html_body_content += "</div>\n"
 
     return add_text_to_header_and_body_of_html(BLANK_HTML_FILE, html_header_content, html_body_content)
 

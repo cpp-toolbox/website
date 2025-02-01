@@ -2,175 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>render_primitives - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <p>These files need to be refactored, the cost of building new drawables is ever increasing due to inheritance, also rename this submodule, here are the details on how to refactor: </p>
 <p>To make the <code>MeshBufferingSystem</code> flexible so it conditionally uses the <code>IndexedVertexComponent</code> only if the entity has it, while still supporting entities that only use raw vertex data, we can adjust the logic to check whether an entity has the <code>IndexedVertexComponent</code>. If it doesn’t, we fall back on using only vertex data for drawing.</p>
 <p>Here’s how we can implement that:</p>
 <h3>Updated Systems</h3>
 <p><strong>MeshBufferingSystem</strong>: </p>
 <p>We now check for both <code>IndexedVertexComponent</code> and <code>NormalsComponent</code>, buffering accordingly if the components exist. If an entity doesn’t have <code>IndexedVertexComponent</code>, it simply buffers vertex data without indices.</p>
-<p>```cpp
-void MeshBufferingSystem(EntityManager&amp; entity_manager) {
-    auto entities = entity_manager.get_entities_with_components<DrawableComponent>();</p>
-<pre><code>for (auto&amp; entity : entities) {
-    auto&amp; drawable = entity.get_component&lt;DrawableComponent&gt;();
+<div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">MeshBufferingSystem</span><span class="p">(</span><span class="n">EntityManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">entities</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">.</span><span class="n">get_entities_with_components</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-    // Generate vertex buffer
-    unsigned int vbo;
-    glGenBuffers(1, &amp;vbo);
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">entities</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">drawable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">get_component</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-    // Indexed or non-indexed vertex data?
-    unsigned int ebo = 0;  // Element Buffer Object for indices, if needed
-    bool has_indexed_component = entity.has_component&lt;IndexedVertexComponent&gt;();
+<span class="w">        </span><span class="c1">// Generate vertex buffer</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">vbo</span><span class="p">;</span>
+<span class="w">        </span><span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vbo</span><span class="p">);</span>
 
-    if (has_indexed_component) {
-        glGenBuffers(1, &amp;ebo);
-    }
+<span class="w">        </span><span class="c1">// Indexed or non-indexed vertex data?</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ebo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Element Buffer Object for indices, if needed</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_indexed_component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">has_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-    // Normal buffer
-    unsigned int nbo = 0;  // Normals Buffer Object
-    bool has_normals = entity.has_component&lt;NormalsComponent&gt;();
-    if (has_normals) {
-        nbo = glGenBuffer();
-    }
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_indexed_component</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ebo</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-    // Bind VAO
-    glBindVertexArray(drawable.vao);
+<span class="w">        </span><span class="c1">// Normal buffer</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">nbo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Normals Buffer Object</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_normals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">has_component</span><span class="o">&lt;</span><span class="n">NormalsComponent</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_normals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">nbo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glGenBuffer</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
 
-    // Buffer vertex data (whether indexed or not)
-    if (has_indexed_component) {
-        auto&amp; mesh = entity.get_component&lt;IndexedVertexComponent&gt;();
+<span class="w">        </span><span class="c1">// Bind VAO</span>
+<span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">drawable</span><span class="p">.</span><span class="n">vao</span><span class="p">);</span>
 
-        // Bind and buffer vertex data
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(float), mesh.vertices.data(), GL_STATIC_DRAW);
+<span class="w">        </span><span class="c1">// Buffer vertex data (whether indexed or not)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_indexed_component</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">get_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-        // Bind and buffer index data
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), mesh.indices.data(), GL_STATIC_DRAW);
-    }
+<span class="w">            </span><span class="c1">// Bind and buffer vertex data</span>
+<span class="w">            </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
+<span class="w">            </span><span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">vertices</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">vertices</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
 
-    // Setup vertex attribute pointers for positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+<span class="w">            </span><span class="c1">// Bind and buffer index data</span>
+<span class="w">            </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">ebo</span><span class="p">);</span>
+<span class="w">            </span><span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">indices</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">indices</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-    // If normals are available, bind and buffer normal data
-    if (has_normals) {
-        auto&amp; normals = entity.get_component&lt;NormalsComponent&gt;();
-        glBindBuffer(GL_ARRAY_BUFFER, nbo);
-        glBufferData(GL_ARRAY_BUFFER, normals.normals.size() * sizeof(float), normals.normals.data(), GL_STATIC_DRAW);
+<span class="w">        </span><span class="c1">// Setup vertex attribute pointers for positions</span>
+<span class="w">        </span><span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 
-        // Setup normal attribute pointers
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-    }
-}
-</code></pre>
-<p>}
-```</p>
+<span class="w">        </span><span class="c1">// If normals are available, bind and buffer normal data</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_normals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">normals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">get_component</span><span class="o">&lt;</span><span class="n">NormalsComponent</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">            </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">nbo</span><span class="p">);</span>
+<span class="w">            </span><span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">normals</span><span class="p">.</span><span class="n">normals</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">normals</span><span class="p">.</span><span class="n">normals</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+
+<span class="w">            </span><span class="c1">// Setup normal attribute pointers</span>
+<span class="w">            </span><span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">            </span><span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p><strong>RenderSystem</strong>: Now the system checks if the entity has the <code>IndexedVertexComponent</code> to determine whether to use indexed drawing (<code>glDrawElements</code>) or non-indexed drawing (<code>glDrawArrays</code>).</p>
-<p>```cpp
-void RenderSystem(EntityManager&amp; entity_manager) {
-    auto entities = entity_manager.get_entities_with_components<DrawableComponent>();</p>
-<pre><code>for (auto&amp; entity : entities) {
-    auto&amp; drawable = entity.get_component&lt;DrawableComponent&gt;();
+<div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RenderSystem</span><span class="p">(</span><span class="n">EntityManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">entities</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">.</span><span class="n">get_entities_with_components</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-    // Bind VAO for the entity
-    glBindVertexArray(drawable.vao);
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">entities</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">drawable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">get_component</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span>
 
-    // Check if the entity has an IndexedVertexComponent
-    if (entity.has_component&lt;IndexedVertexComponent&gt;()) {
-        auto&amp; mesh = entity.get_component&lt;IndexedVertexComponent&gt;();
+<span class="w">        </span><span class="c1">// Bind VAO for the entity</span>
+<span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">drawable</span><span class="p">.</span><span class="n">vao</span><span class="p">);</span>
 
-        // Use indexed drawing
-        glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
-    } else {
-        // If no IndexedVertexComponent, use non-indexed drawing
-        glDrawArrays(GL_TRIANGLES, 0, 6);  // Assuming 6 vertices for example
-    }
-}
-</code></pre>
-<p>}
-```</p>
+<span class="w">        </span><span class="c1">// Check if the entity has an IndexedVertexComponent</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">entity</span><span class="p">.</span><span class="n">has_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity</span><span class="p">.</span><span class="n">get_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="w">            </span><span class="c1">// Use indexed drawing</span>
+<span class="w">            </span><span class="n">glDrawElements</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">indices</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_UNSIGNED_INT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// If no IndexedVertexComponent, use non-indexed drawing</span>
+<span class="w">            </span><span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span><span class="w">  </span><span class="c1">// Assuming 6 vertices for example</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <h3>Components</h3>
 <p>No changes are needed in the components, as they remain focused on holding data.</p>
 <p><strong>DrawableComponent</strong>:</p>
-<p>```cpp
-struct DrawableComponent {
-    unsigned int vao; // Vertex Array Object</p>
-<pre><code>DrawableComponent() {
-    glGenVertexArrays(1, &amp;vao);
-}
+<div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">DrawableComponent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">vao</span><span class="p">;</span><span class="w"> </span><span class="c1">// Vertex Array Object</span>
 
-~DrawableComponent() {
-    glDeleteVertexArrays(1, &amp;vao);
-}
-</code></pre>
-<p>};
-```</p>
+<span class="w">    </span><span class="n">DrawableComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">glGenVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">DrawableComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">glDeleteVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+
 <p><strong>IndexedVertexComponent</strong> (for indexed vertex data):</p>
-<p>```cpp
-struct IndexedVertexComponent {
-    std::vector<float> vertices;    // Vertex data
-    std::vector<unsigned int> indices; // Index data (optional)</p>
-<pre><code>IndexedVertexComponent(const std::vector&lt;float&gt;&amp; vertex_data, const std::vector&lt;unsigned int&gt;&amp; index_data = {})
-    : vertices(vertex_data), indices(index_data) {}
-</code></pre>
-<p>};
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">IndexedVertexComponent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="p">;</span><span class="w">    </span><span class="c1">// Vertex data</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">indices</span><span class="p">;</span><span class="w"> </span><span class="c1">// Index data (optional)</span>
+
+<span class="w">    </span><span class="n">IndexedVertexComponent</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">vertex_data</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">index_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{})</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">vertices</span><span class="p">(</span><span class="n">vertex_data</span><span class="p">),</span><span class="w"> </span><span class="n">indices</span><span class="p">(</span><span class="n">index_data</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">};</span>
+</code></pre></div>
+
 <p><strong>NormalsComponent</strong> (for normals data):</p>
-<p>```cpp
-struct NormalsComponent {
-    std::vector<float> normals;  // Normal data</p>
-<pre><code>NormalsComponent(const std::vector&lt;float&gt;&amp; normal_data)
-    : normals(normal_data) {}
-</code></pre>
-<p>};
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">NormalsComponent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normals</span><span class="p">;</span><span class="w">  </span><span class="c1">// Normal data</span>
+
+<span class="w">    </span><span class="n">NormalsComponent</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">normal_data</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">normals</span><span class="p">(</span><span class="n">normal_data</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">};</span>
+</code></pre></div>
+
 <h3>Example Usage</h3>
 <p><strong>Creating Entities</strong>: Now you can create entities with or without indexed vertices, and the system will automatically handle them accordingly.</p>
 <p><strong>Entity with Indexed Vertices and Normals</strong>:</p>
-<p>```cpp
-std::vector<float> vertices = {
-    // Vertex positions
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-};</p>
-<p>std::vector<unsigned int> indices = { 0, 1, 2 };</p>
-<p>// Normals
-std::vector<float> normals = {
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f
-};</p>
-<p>// Create an entity with indexed vertices and normals
-Entity entity = entity_manager.create_entity();
-entity.add_component<DrawableComponent>();<br />
-entity.add_component<IndexedVertexComponent>(vertices, indices);
-entity.add_component<NormalsComponent>(normals);
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Vertex positions</span>
+<span class="w">    </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">indices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// Normals</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span>
+<span class="p">};</span>
+
+<span class="c1">// Create an entity with indexed vertices and normals</span>
+<span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">.</span><span class="n">create_entity</span><span class="p">();</span>
+<span class="n">entity</span><span class="p">.</span><span class="n">add_component</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span><span class="w">  </span>
+<span class="n">entity</span><span class="p">.</span><span class="n">add_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="p">);</span>
+<span class="n">entity</span><span class="p">.</span><span class="n">add_component</span><span class="o">&lt;</span><span class="n">NormalsComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">normals</span><span class="p">);</span>
+</code></pre></div>
+
 <p><strong>Entity with Non-Indexed Vertices and No Normals</strong>:</p>
-<p>```cpp
-std::vector<float> vertices = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-};</p>
-<p>// Create an entity with only vertex data
-Entity entity = entity_manager.create_entity();
-entity.add_component<DrawableComponent>();<br />
-entity.add_component<IndexedVertexComponent>(vertices);  // No indices, non-indexed draw
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span>
+<span class="p">};</span>
+
+<span class="c1">// Create an entity with only vertex data</span>
+<span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entity_manager</span><span class="p">.</span><span class="n">create_entity</span><span class="p">();</span>
+<span class="n">entity</span><span class="p">.</span><span class="n">add_component</span><span class="o">&lt;</span><span class="n">DrawableComponent</span><span class="o">&gt;</span><span class="p">();</span><span class="w">  </span>
+<span class="n">entity</span><span class="p">.</span><span class="n">add_component</span><span class="o">&lt;</span><span class="n">IndexedVertexComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">vertices</span><span class="p">);</span><span class="w">  </span><span class="c1">// No indices, non-indexed draw</span>
+</code></pre></div>
+
 <h3>Running Systems</h3>
-<p><code>cpp
-MeshBufferingSystem(entity_manager);
-RenderSystem(entity_manager);</code></p>
+<div class="codehilite"><pre><span></span><code><span class="n">MeshBufferingSystem</span><span class="p">(</span><span class="n">entity_manager</span><span class="p">);</span>
+<span class="n">RenderSystem</span><span class="p">(</span><span class="n">entity_manager</span><span class="p">);</span>
+</code></pre></div>
+
 <h3>Summary of Changes</h3>
 <ol>
 <li><strong>MeshBufferingSystem</strong>: Now checks if the entity has an <code>IndexedVertexComponent</code>. If it does, it buffers the vertex and index data. If it only has vertex data, it buffers the vertices without using an element buffer.</li>
@@ -190,7 +192,6 @@ RenderSystem(entity_manager);</code></p>
 	<li><a href="textured_model_loading.html">textured_model_loading</a></li>
 	<li><a href="texture_loader.html">texture_loader</a></li>
 </ul>
-</div>
 
 </body>
 </html>

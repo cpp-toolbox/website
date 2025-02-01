@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>glfw_lambda_callback_manager - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>glfw_lambda_callback_manager</h1>
 <p>SUBPROJECT</p>
 <p>By default you don't have access to much inside of the regular glfw callbacks, this causes most people to just use some global state and access those things inside the callbacks, this is for those who don't want that.</p>
@@ -16,16 +13,15 @@
 <p>Another thought is that maybe the lambdas could be defined in main(), but that provides a problem because we can't define c style functions inside of other c style functions, and so we can never make our callbacks use the lambdas because they would have to be defined outside of this function call, but then the lambdas would already be removed from the stack.</p>
 <p>This subproject provides a solution by encapsulating the lambdas in a class, and then providing class members which are regular c style functions which call the lambdas.</p>
 <h2>usage</h2>
-<p><code>cpp
-    std::function&lt;void(unsigned int)&gt; char_callback = [](unsigned int _) {};
-    std::function&lt;void(int, int, int, int)&gt; key_callback = [](int _, int _1, int _2, int _3) {};
-    std::function&lt;void(double, double)&gt; mouse_pos_callback = [](double _, double _1) {};
-    std::function&lt;void(int, int, int)&gt; mouse_button_callback = [](int _, int _1, int _2) {};
-    GLFWLambdaCallbackManager glcm(window, char_callback, key_callback, mouse_pos_callback, mouse_button_callback);</code></p>
+<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">char_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">codepoint</span><span class="p">)</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">key_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scancode</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mods</span><span class="p">)</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mouse_pos_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">double</span><span class="w"> </span><span class="n">xpos</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">ypos</span><span class="p">)</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mouse_button_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">button</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mods</span><span class="p">)</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">GLFWLambdaCallbackManager</span><span class="w"> </span><span class="nf">glcm</span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">glfw_window</span><span class="p">,</span><span class="w"> </span><span class="n">char_callback</span><span class="p">,</span><span class="w"> </span><span class="n">key_callback</span><span class="p">,</span><span class="w"> </span><span class="n">mouse_pos_callback</span><span class="p">,</span><span class="w"> </span><span class="n">mouse_button_callback</span><span class="p">);</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/glfw_lambda_callback_manager'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/glfw_lambda_callback_manager.git</h2>
-</div>
 
 </body>
 </html>

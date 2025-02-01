@@ -2,36 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>logger_component - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>logger_component</h1>
 <p>a class that can be composed with others to add logging functionality with spdlog, the reason this exists is to simply abstract away working with spdlog and creating a new logger, that way when you're working on something and you want logging you simply use this rather than having to think about the logging implementation to save time.</p>
 <h2>usage</h2>
-<p>If you want to add a logger to a particular subsystem, you must first make some spdlog sinks:
-```cpp
-  // Create console and file sinks
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink-&gt;set_level(spdlog::level::debug);</p>
-<pre><code>auto file_sink = std::make_shared&lt;spdlog::sinks::basic_file_sink_mt&gt;("network_logs.txt", true);
-file_sink-&gt;set_level(spdlog::level::info);
+<p>If you want to add a logger to a particular subsystem, you must first make some spdlog sinks:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="c1">// Create console and file sinks</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">console_sink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">spdlog</span><span class="o">::</span><span class="n">sinks</span><span class="o">::</span><span class="n">stdout_color_sink_mt</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="n">console_sink</span><span class="o">-&gt;</span><span class="n">set_level</span><span class="p">(</span><span class="n">spdlog</span><span class="o">::</span><span class="n">level</span><span class="o">::</span><span class="n">debug</span><span class="p">);</span>
 
-std::vector&lt;spdlog::sink_ptr&gt; sinks = {console_sink, file_sink};
-</code></pre>
-<p><code>Now that you have your sinks, you can create a logger component:</code>cpp
-    logger_component = LoggerComponent("network", sinks);
-<code>Then in your logic you can do this:</code>cpp
-      if (logger_component.logging_enabled) {
-          logger_component.get_logger()-&gt;error("An error occurred while initializing ENet.");
-      }
-```</p>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">file_sink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">spdlog</span><span class="o">::</span><span class="n">sinks</span><span class="o">::</span><span class="n">basic_file_sink_mt</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;network_logs.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">file_sink</span><span class="o">-&gt;</span><span class="n">set_level</span><span class="p">(</span><span class="n">spdlog</span><span class="o">::</span><span class="n">level</span><span class="o">::</span><span class="n">info</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">spdlog</span><span class="o">::</span><span class="n">sink_ptr</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sinks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">console_sink</span><span class="p">,</span><span class="w"> </span><span class="n">file_sink</span><span class="p">};</span>
+</code></pre></div>
+
+<p>Now that you have your sinks, you can create a logger component:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">logger_component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoggerComponent</span><span class="p">(</span><span class="s">&quot;network&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sinks</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Then in your logic you can do this:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">logger_component</span><span class="p">.</span><span class="n">logging_enabled</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">logger_component</span><span class="p">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;An error occurred while initializing ENet.&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/logger_component'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/logger_component.git</h2>
-</div>
 
 </body>
 </html>

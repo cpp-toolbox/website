@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>batcher - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>batcher</h1>
 <p>a class which helps manage batching over shaders, note that there are no source files stored, but instead must be generated with the python script.</p>
 <h2>setup</h2>
@@ -23,38 +20,40 @@
 <p>An object id is a unique id associated with a collection of drawing information, which for the most part should stay static</p>
 <h2>example</h2>
 <p>Since the batcher is generated code, it's good to look at some real code which is immediately readable to understand how this sytem works, <code>batcher_visualization.py</code> was created for that purpose, and here is the output: </p>
-<p><code>$ python batcher_visualization.py 
-queuing up aaa with id: id1 for printing
-Adding string with ID 'id1': aaa
-Array after adding string with ID 'id1'
-Array: ['a', 'a', 'a', '', '', '', '', '', '', '']
-Metadata: {'id1': (0, 3)}
-queuing up bbb with id: id2 for printing
-Adding string with ID 'id2': bbb
-Array after adding string with ID 'id2'
-Array: ['a', 'a', 'a', 'b', 'b', 'b', '', '', '', '']
-Metadata: {'id1': (0, 3), 'id2': (3, 3)}
-=== PRINTING EVERYTHING ===
-Retrieving string with ID 'id1'
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>batcher_visualization.py<span class="w"> </span>
+queuing<span class="w"> </span>up<span class="w"> </span>aaa<span class="w"> </span>with<span class="w"> </span>id:<span class="w"> </span>id1<span class="w"> </span><span class="k">for</span><span class="w"> </span>printing
+Adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span>aaa
+Array<span class="w"> </span>after<span class="w"> </span>adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>
+Array:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">]</span>
+Metadata:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">3</span><span class="o">)}</span>
+queuing<span class="w"> </span>up<span class="w"> </span>bbb<span class="w"> </span>with<span class="w"> </span>id:<span class="w"> </span>id2<span class="w"> </span><span class="k">for</span><span class="w"> </span>printing
+Adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id2&#39;</span>:<span class="w"> </span>bbb
+Array<span class="w"> </span>after<span class="w"> </span>adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id2&#39;</span>
+Array:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">]</span>
+Metadata:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;id2&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">3</span><span class="o">)}</span>
+<span class="o">===</span><span class="w"> </span>PRINTING<span class="w"> </span><span class="nv">EVERYTHING</span><span class="w"> </span><span class="o">===</span>
+Retrieving<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>
 aaa
-Retrieving string with ID 'id2'
+Retrieving<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id2&#39;</span>
 bbb
-queuing up cc with id: id3 for printing with replacement
-Adding string with ID 'id3': cc
-Array after adding string with ID 'id3'
-Array: ['a', 'a', 'a', 'b', 'b', 'b', 'c', 'c', '', '']
-Metadata: {'id1': (0, 3), 'id2': (3, 3), 'id3': (6, 2)}
-queuing up ddd with id: id1 for printing with replacement
-Adding string with ID 'id1': ddd
-Removed old string with ID 'id1'.
-Array after adding string with ID 'id1'
-Array: ['d', 'd', 'd', 'b', 'b', 'b', 'c', 'c', '', '']
-Metadata: {'id2': (3, 3), 'id3': (6, 2), 'id1': (0, 3)}
-=== PRINTING EVERYTHING ===
-Retrieving string with ID 'id3'
+queuing<span class="w"> </span>up<span class="w"> </span>cc<span class="w"> </span>with<span class="w"> </span>id:<span class="w"> </span>id3<span class="w"> </span><span class="k">for</span><span class="w"> </span>printing<span class="w"> </span>with<span class="w"> </span>replacement
+Adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id3&#39;</span>:<span class="w"> </span>cc
+Array<span class="w"> </span>after<span class="w"> </span>adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id3&#39;</span>
+Array:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;a&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;c&#39;</span>,<span class="w"> </span><span class="s1">&#39;c&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">]</span>
+Metadata:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;id2&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;id3&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">6</span>,<span class="w"> </span><span class="m">2</span><span class="o">)}</span>
+queuing<span class="w"> </span>up<span class="w"> </span>ddd<span class="w"> </span>with<span class="w"> </span>id:<span class="w"> </span>id1<span class="w"> </span><span class="k">for</span><span class="w"> </span>printing<span class="w"> </span>with<span class="w"> </span>replacement
+Adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span>ddd
+Removed<span class="w"> </span>old<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>.
+Array<span class="w"> </span>after<span class="w"> </span>adding<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>
+Array:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;d&#39;</span>,<span class="w"> </span><span class="s1">&#39;d&#39;</span>,<span class="w"> </span><span class="s1">&#39;d&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>,<span class="w"> </span><span class="s1">&#39;c&#39;</span>,<span class="w"> </span><span class="s1">&#39;c&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span>,<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">]</span>
+Metadata:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;id2&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;id3&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">6</span>,<span class="w"> </span><span class="m">2</span><span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;id1&#39;</span>:<span class="w"> </span><span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">3</span><span class="o">)}</span>
+<span class="o">===</span><span class="w"> </span>PRINTING<span class="w"> </span><span class="nv">EVERYTHING</span><span class="w"> </span><span class="o">===</span>
+Retrieving<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id3&#39;</span>
 cc
-Retrieving string with ID 'id1'
-ddd</code></p>
+Retrieving<span class="w"> </span>string<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span><span class="s1">&#39;id1&#39;</span>
+ddd
+</code></pre></div>
+
 <p>To understand the batcher do this conversion
 - Fixed Array -&gt; Vertex Buffer Object
 - Strings -&gt; Geometry you want to draw
@@ -77,7 +76,6 @@ ddd</code></p>
 	<li><a href="vertex_geometry.html">vertex_geometry</a></li>
 	<li><a href="shader_standard.html">shader_standard</a></li>
 </ul>
-</div>
 
 </body>
 </html>

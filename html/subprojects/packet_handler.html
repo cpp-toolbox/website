@@ -2,69 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>packet_handler - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>packet_handler</h1>
 <p>In the following example we will show how to use the packet handler in the context of a client server game. First you have to create a subproject called packet_types that defines a struct as follows:</p>
-<p><code>packet_type.hpp</code> (client and server):
-<code>cpp
-enum class PacketType : uint8_t {
-    UNIQUE_CLIENT_ID,
-    GAME_UPDATE_POSITIONS,
-    GAME_UPDATE_ONE_TIME_EVENTS,
-    USER_MESSAGES,
-};</code>
-when you run <code>sbpt</code> it will correctly include it. Additionally both the client and server must have the same packet types available.</p>
-<p>Next when constructing a <code>PacketHandler</code> you must create a map like this (client):
-```cpp
-std::unordered_map<PacketType, PacketHandler::HandlerFunction> initialize_packet_handlers() {
-    std::unordered_map<PacketType, PacketHandler::HandlerFunction> handlers;</p>
-<pre><code>handlers[PacketType::UNIQUE_CLIENT_ID] = [](const void* data) {
-    const UniqueClientIDPacket* packet = reinterpret_cast&lt;const UniqueClientIDPacket*&gt;(data);
-    handle_unique_client_id_packet(*packet);
-};
+<p><code>packet_type.hpp</code> (client and server):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PacketType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">UNIQUE_CLIENT_ID</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GAME_UPDATE_POSITIONS</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GAME_UPDATE_ONE_TIME_EVENTS</span><span class="p">,</span>
+<span class="w">    </span><span class="n">USER_MESSAGES</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div>
 
-handlers[PacketType::GAME_UPDATE_POSITIONS] = [](const void* data) {
-    const PacketHeader* header = reinterpret_cast&lt;const PacketHeader*&gt;(data);
-    size_t num_positions = header-&gt;size_of_data_without_header / sizeof(PositionArray);
+<p>when you run <code>sbpt</code> it will correctly include it. Additionally both the client and server must have the same packet types available.</p>
+<p>Next when constructing a <code>PacketHandler</code> you must create a map like this (client):</p>
+<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">PacketType</span><span class="p">,</span><span class="w"> </span><span class="n">PacketHandler</span><span class="o">::</span><span class="n">HandlerFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">initialize_packet_handlers</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">PacketType</span><span class="p">,</span><span class="w"> </span><span class="n">PacketHandler</span><span class="o">::</span><span class="n">HandlerFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">handlers</span><span class="p">;</span>
 
-    GameUpdatePositionsPacket packet;
-    packet.header = *header;
-    packet.positions.resize(num_positions);
-    std::memcpy(packet.positions.data(), reinterpret_cast&lt;const char*&gt;(data) + sizeof(PacketHeader), num_positions * sizeof(PositionArray));
+<span class="w">    </span><span class="n">handlers</span><span class="p">[</span><span class="n">PacketType</span><span class="o">::</span><span class="n">UNIQUE_CLIENT_ID</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">UniqueClientIDPacket</span><span class="o">*</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">UniqueClientIDPacket</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="n">handle_unique_client_id_packet</span><span class="p">(</span><span class="o">*</span><span class="n">packet</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
 
-    handle_game_update_positions_packet(packet);
-};
+<span class="w">    </span><span class="n">handlers</span><span class="p">[</span><span class="n">PacketType</span><span class="o">::</span><span class="n">GAME_UPDATE_POSITIONS</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">PacketHeader</span><span class="o">*</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">PacketHeader</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_positions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">header</span><span class="o">-&gt;</span><span class="n">size_of_data_without_header</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PositionArray</span><span class="p">);</span>
 
-return handlers;
-</code></pre>
-<p>}</p>
-<p>```</p>
-<p>and pass it in when you construct the packet handler, this will allow it to automatically run the correct callback function whenever a packet of that type is received, to make this happen you usually want to do something like this: 
-<code>cpp
-        std::cout &lt;&lt; "tick" &lt;&lt; "\n";
-        std::vector&lt;PacketWithSize&gt; packets_since_last_tick = network.get_network_events_received_since_last_tick();
-        for (const auto&amp; packet : packets_since_last_tick) {
-            std::cout &lt;&lt; "Received packet of size: " &lt;&lt; packet.size &lt;&lt; "\n";
-        }
-        packet_handler.handle_packets(packets_since_last_tick);</code></p>
-<p>To send over packets you should do something similar to this: 
-```cpp
-        server.get_network_events_since_last_tick();</p>
-<pre><code>    GameUpdatePositionsPacket packet = toggle ? create_mock_game_update_positions_packet_2() : create_mock_game_update_positions_packet_1();
+<span class="w">        </span><span class="n">GameUpdatePositionsPacket</span><span class="w"> </span><span class="n">packet</span><span class="p">;</span>
+<span class="w">        </span><span class="n">packet</span><span class="p">.</span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">header</span><span class="p">;</span>
+<span class="w">        </span><span class="n">packet</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_positions</span><span class="p">);</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="n">packet</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PacketHeader</span><span class="p">),</span><span class="w"> </span><span class="n">num_positions</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PositionArray</span><span class="p">));</span>
 
-    size_t packet_size = sizeof(PacketHeader) + packet.positions.size() * sizeof(PositionArray);
-    std::vector&lt;char&gt; buffer(packet_size);
-    std::memcpy(buffer.data(), &amp;packet.header, sizeof(PacketHeader));
-    std::memcpy(buffer.data() + sizeof(PacketHeader), packet.positions.data(), packet.positions.size() * sizeof(PositionArray));
+<span class="w">        </span><span class="n">handle_game_update_positions_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
 
-    server.reliable_broadcast(buffer.data(), buffer.size());
-</code></pre>
-<p>```</p>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">handlers</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>and pass it in when you construct the packet handler, this will allow it to automatically run the correct callback function whenever a packet of that type is received, to make this happen you usually want to do something like this: </p>
+<div class="codehilite"><pre><span></span><code><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;tick&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">PacketWithSize</span><span class="o">&gt;</span><span class="w"> </span><span class="n">packets_since_last_tick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">network</span><span class="p">.</span><span class="n">get_network_events_received_since_last_tick</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">packets_since_last_tick</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Received packet of size: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">packet</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">packet_handler</span><span class="p">.</span><span class="n">handle_packets</span><span class="p">(</span><span class="n">packets_since_last_tick</span><span class="p">);</span>
+</code></pre></div>
+
+<p>To send over packets you should do something similar to this: </p>
+<div class="codehilite"><pre><span></span><code><span class="w">        </span><span class="n">server</span><span class="p">.</span><span class="n">get_network_events_since_last_tick</span><span class="p">();</span>
+
+<span class="w">        </span><span class="n">GameUpdatePositionsPacket</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">toggle</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">create_mock_game_update_positions_packet_2</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">create_mock_game_update_positions_packet_1</span><span class="p">();</span>
+
+<span class="w">        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">packet_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PacketHeader</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">packet</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PositionArray</span><span class="p">);</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buffer</span><span class="p">(</span><span class="n">packet_size</span><span class="p">);</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">packet</span><span class="p">.</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PacketHeader</span><span class="p">));</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PacketHeader</span><span class="p">),</span><span class="w"> </span><span class="n">packet</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">packet</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PositionArray</span><span class="p">));</span>
+
+<span class="w">        </span><span class="n">server</span><span class="p">.</span><span class="n">reliable_broadcast</span><span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/packet_handler'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/packet_handler.git</h2>
@@ -75,7 +73,6 @@ return handlers;
 	<li><a href="client_networking.html">client_networking</a></li>
 	<li><a href="server_networking.html">server_networking</a></li>
 </ul>
-</div>
 
 </body>
 </html>

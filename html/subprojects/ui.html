@@ -2,47 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>ui - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>ui</h1>
 <p>We need to turn this into a little bit like html, we need to add divs and ids so that we can grab oids of the objects and then do operations on them, because right now we have ways to get things, but no ways of getting them back</p>
 <h2>usage</h2>
-<p>```cpp
- filesystem_browser.process_mouse_position(ndc_mouse_pos);</p>
-<p>if (mouse_clicked_signal.is_just_on()) {
-    filesystem_browser.process_mouse_just_clicked(ndc_mouse_pos);
-}</p>
-<p>for (auto &amp;cb : filesystem_browser.get_colored_boxes()) {
-    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
-        cb.id, cb.ivpsc.indices, cb.ivpsc.xyz_positions, cb.ivpsc.rgb_colors);
-}</p>
-<p>for (auto &amp;tb : filesystem_browser.get_text_boxes()) {
-    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
-        tb.id, tb.background_ivpsc.indices, tb.background_ivpsc.xyz_positions,
-        tb.background_ivpsc.rgb_colors);</p>
-<pre><code>batcher.transform_v_with_signed_distance_field_text_shader_batcher.queue_draw(
-    tb.id, tb.text_drawing_data.indices, tb.text_drawing_data.xyz_positions,
-    tb.text_drawing_data.texture_coordinates, tb.modified_signal.has_just_changed());
-</code></pre>
-<p>}</p>
-<p>for (auto &amp;tb : filesystem_browser.get_clickable_text_boxes()) {
-    batcher.absolute_position_with_colored_vertex_shader_batcher.queue_draw(
-        tb.id, tb.ivpsc.indices, tb.ivpsc.xyz_positions, tb.ivpsc.rgb_colors,
-        tb.modified_signal.has_just_changed());</p>
-<pre><code>batcher.transform_v_with_signed_distance_field_text_shader_batcher.queue_draw(
-    tb.id, tb.text_drawing_data.indices, tb.text_drawing_data.xyz_positions,
-    tb.text_drawing_data.texture_coordinates);
-</code></pre>
-<p>}</p>
-<p>glDisable(GL_DEPTH_TEST);
-batcher.absolute_position_with_colored_vertex_shader_batcher.draw_everything();
-batcher.transform_v_with_signed_distance_field_text_shader_batcher.draw_everything();
-glEnable(GL_DEPTH_TEST);</p>
-<p>```</p>
+<p>Since rendering techniques may change, the ui class simply gives a way to export the geometry required to render the ui, in the <code>cpp toolbox</code> context then rendering and processing the ui can be put into a function like this:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">process_and_queue_render_ui</span><span class="p">(</span><span class="n">glm</span><span class="o">::</span><span class="n">vec2</span><span class="w"> </span><span class="n">ndc_mouse_pos</span><span class="p">,</span><span class="w"> </span><span class="n">UI</span><span class="w"> </span><span class="o">&amp;</span><span class="n">curr_ui</span><span class="p">,</span><span class="w"> </span><span class="n">Batcher</span><span class="w"> </span><span class="o">&amp;</span><span class="n">batcher</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">process_mouse_position</span><span class="p">(</span><span class="n">ndc_mouse_pos</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mouse_just_clicked</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">process_mouse_just_clicked</span><span class="p">(</span><span class="n">ndc_mouse_pos</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">process_key_pressed_this_tick</span><span class="p">(</span><span class="n">curr_ui</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">get_colored_boxes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span>
+<span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">get_text_boxes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">tb</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">tb</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">tb</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span>
+<span class="w">            </span><span class="n">tb</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">texture_coordinates</span><span class="p">);</span>
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">tb</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">tb</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">tb</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">tb</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span>
+<span class="w">            </span><span class="n">tb</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">get_clickable_text_boxes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">cr</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span>
+<span class="w">            </span><span class="n">cr</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">texture_coordinates</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">cr</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="p">.</span><span class="n">ivpsc</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span>
+<span class="w">            </span><span class="n">cr</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ib</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">get_input_boxes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">ib</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span>
+<span class="w">            </span><span class="n">ib</span><span class="p">.</span><span class="n">text_drawing_data</span><span class="p">.</span><span class="n">texture_coordinates</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">ib</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">ib</span><span class="p">.</span><span class="n">background_ivpsc</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span>
+<span class="w">            </span><span class="n">ib</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dd</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">curr_ui</span><span class="p">.</span><span class="n">get_dropdowns</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">dd</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_text_data</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_text_data</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span>
+<span class="w">            </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_text_data</span><span class="p">.</span><span class="n">texture_coordinates</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">            </span><span class="n">dd</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_background</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_background</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span>
+<span class="w">            </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_background</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+
+<span class="w">        </span><span class="c1">// render all the dropdowns if they&#39;re active</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_open</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">num_dropdowns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_option_rects</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_dropdowns</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">IVPSolidColor</span><span class="w"> </span><span class="n">ivpsc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_option_backgrounds</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">                </span><span class="n">IVPTextured</span><span class="w"> </span><span class="n">ivpt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_option_text_data</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">                </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">doid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">dropdown_doids</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+<span class="w">                </span><span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">                    </span><span class="n">doid</span><span class="p">,</span><span class="w"> </span><span class="n">ivpt</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">ivpt</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">ivpt</span><span class="p">.</span><span class="n">texture_coordinates</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">dd</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+
+<span class="w">                </span><span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">queue_draw</span><span class="p">(</span>
+<span class="w">                    </span><span class="n">doid</span><span class="p">,</span><span class="w"> </span><span class="n">ivpsc</span><span class="p">.</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">ivpsc</span><span class="p">.</span><span class="n">xyz_positions</span><span class="p">,</span><span class="w"> </span><span class="n">ivpsc</span><span class="p">.</span><span class="n">rgb_colors</span><span class="p">,</span><span class="w"> </span><span class="n">dd</span><span class="p">.</span><span class="n">modified_signal</span><span class="p">.</span><span class="n">has_just_changed</span><span class="p">());</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>When rendering the ui, we usually want to ignore the 3d component of information so that it appears on top of the already rendered things, so before drawing you might want to disable the depth test:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">glDisable</span><span class="p">(</span><span class="n">GL_DEPTH_TEST</span><span class="p">);</span>
+<span class="n">batcher</span><span class="p">.</span><span class="n">absolute_position_with_colored_vertex_shader_batcher</span><span class="p">.</span><span class="n">draw_everything</span><span class="p">();</span>
+<span class="n">batcher</span><span class="p">.</span><span class="n">transform_v_with_signed_distance_field_text_shader_batcher</span><span class="p">.</span><span class="n">draw_everything</span><span class="p">();</span>
+<span class="n">glEnable</span><span class="p">(</span><span class="n">GL_DEPTH_TEST</span><span class="p">);</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/ui'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/ui.git</h2>
@@ -55,7 +102,6 @@ glEnable(GL_DEPTH_TEST);</p>
 	<li><a href="unique_id_generator.html">unique_id_generator</a></li>
 	<li><a href="temporal_binary_signal.html">temporal_binary_signal</a></li>
 </ul>
-</div>
 
 </body>
 </html>

@@ -39,11 +39,16 @@
 </p>
 
 <p>
-    The first problem is that if we just send them over to the server in a bundle, how do we unpack this bundle? Do we consume one off the top for each server tick? This would theoretically work since the production and consume rates are equal, but then the server would "catch up" at a much slower rate to what the current game state would be on the client, thus making the game feel laggy. Instead, it might make more sense to process them all at once. But this would be slightly strange because for most physics ticks, there would be no inputs to process at all.
+    The first problem is that if we just send them over to the server in a bundle, how do we unpack this bundle? Do we consume one off the top for each server tick? This would theoretically work since the production and consume rates are equal, but then the server would "catch up" at a much slower rate to what the current game state would be on the client, thus making the game feel laggy. Instead, it might make more sense to process them all at once but this would problematic since we would have to use the same time delta for each, and if that time detla was bad, that's a problem additionally this would be slightly strange because for most physics ticks, there would be no inputs to process at all, but on a small perctange of them we process many inputs at once.
 </p>
 
 <p>
     In either of the discussed cases, we have to make a bad decision. We either have to delay the server state or have a protocol in place when multiple updates come in at once.
+</p>
+
+<h2>the batching linearity property</h2>
+<p>
+    as we mentioned before we want be able to actually update the game state at ta rate equal to 512, if we send out at 60Hz, then there is a property that can be taken advantage of. Since on each tic, there will be approximately
 </p>
 
 <h2>update isolation</h2>

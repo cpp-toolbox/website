@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>window - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>Info</h1>
 <p>A glfw window </p>
 <h1>Depdendencies</h1>
@@ -16,24 +13,29 @@
 <li><a href="https://github.com/opengl-toolbox/glad_opengl_3.3_core">glad3.3</a></li>
 </ul>
 <h1>CMake</h1>
-<p>```
-...</p>
-<h1>GLAD: opengl function loader</h1>
-<p>include_directories(external_libraries/glad_opengl_3.3_core/include)
-add_subdirectory(external_libraries/glad_opengl_3.3_core)</p>
-<h1>GLFW</h1>
-<h1>disable unnessary steps in build</h1>
-<p>set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)</p>
-<p>add_subdirectory(external_libraries/glfw)</p>
-<p>... </p>
-<p>target_link_libraries(your_project_name ... glfw glad)
-```</p>
+<div class="codehilite"><pre><span></span><code><span class="o">...</span>
+
+<span class="c1"># GLAD: opengl function loader</span>
+
+<span class="n">include_directories</span><span class="p">(</span><span class="n">external_libraries</span><span class="o">/</span><span class="n">glad_opengl_3</span><span class="o">.</span><span class="mi">3</span><span class="n">_core</span><span class="o">/</span><span class="n">include</span><span class="p">)</span>
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">external_libraries</span><span class="o">/</span><span class="n">glad_opengl_3</span><span class="o">.</span><span class="mi">3</span><span class="n">_core</span><span class="p">)</span>
+
+<span class="c1"># GLFW</span>
+
+<span class="c1"># disable unnessary steps in build</span>
+<span class="n">set</span><span class="p">(</span><span class="n">GLFW_BUILD_DOCS</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="n">CACHE</span><span class="w"> </span><span class="n">BOOL</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="n">FORCE</span><span class="p">)</span>
+<span class="n">set</span><span class="p">(</span><span class="n">GLFW_BUILD_TESTS</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="n">CACHE</span><span class="w"> </span><span class="n">BOOL</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="n">FORCE</span><span class="p">)</span>
+<span class="n">set</span><span class="p">(</span><span class="n">GLFW_BUILD_EXAMPLES</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="n">CACHE</span><span class="w"> </span><span class="n">BOOL</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="n">FORCE</span><span class="p">)</span>
+
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">external_libraries</span><span class="o">/</span><span class="n">glfw</span><span class="p">)</span>
+
+<span class="o">...</span><span class="w"> </span>
+
+<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">your_project_name</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="n">glfw</span><span class="w"> </span><span class="n">glad</span><span class="p">)</span>
+</code></pre></div>
 <h2><a href='https://github.com/cpp-toolbox/window'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/window.git</h2>
-</div>
 
 </body>
 </html>

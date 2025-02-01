@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<link rel="stylesheet" href="../cjm-css/styles.css">
-<title>shader_standard - GitHub</title>
 
 </head>
 <body>
-<div class="wrapper">
 <h1>shader_standard</h1>
 <p>a system which enforces a standard for naming variables in shaders, this is so that we can have systems such as the shader cache, and it can integrate much easier with more assumptions.</p>
 <h2>catalog</h2>
@@ -27,63 +24,67 @@
 <h2>stuff that applies to many shaders</h2>
 <h3>TEXTURE PACKERS</h3>
 <p>For every texture packer you need to at least assign the bounding boxes: </p>
-<p>```cpp
-    TexturePacker texture_packer(textures_directory, output_dir, container_side_length);</p>
-<pre><code>shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED,
-                         ShaderUniformVariable::PACKED_TEXTURE_BOUNDING_BOXES,
-                         texture_packer.texture_index_to_bounding_box);
-</code></pre>
-<p>```</p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">TexturePacker</span><span class="w"> </span><span class="nf">texture_packer</span><span class="p">(</span><span class="n">textures_directory</span><span class="p">,</span><span class="w"> </span><span class="n">output_dir</span><span class="p">,</span><span class="w"> </span><span class="n">container_side_length</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">CWL_V_TRANSFORMATION_TEXTURE_PACKED</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">PACKED_TEXTURE_BOUNDING_BOXES</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">texture_packer</span><span class="p">.</span><span class="n">texture_index_to_bounding_box</span><span class="p">);</span>
+</code></pre></div>
+
 <p>the texture packer allows you to add new textures dynamically when you do a call to regenerate, you will have to refresh all existing geometry though, see how observatory does this until this is better documented.</p>
 <h3>CWL_V SHADERS</h3>
 <p>You'll want to update their uniforms one time per frame like this: </p>
-<p><code>cpp
-shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::CAMERA_TO_CLIP, projection);
-shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::WORLD_TO_CAMERA, origin_view); shader_cache.set_uniform(ShaderType::CWL_V_TRANSFORMATION_TEXTURE_PACKED, ShaderUniformVariable::LOCAL_TO_WORLD, local_to_world);</code></p>
+<div class="codehilite"><pre><span></span><code><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">CWL_V_TRANSFORMATION_TEXTURE_PACKED</span><span class="p">,</span><span class="w"> </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">CAMERA_TO_CLIP</span><span class="p">,</span><span class="w"> </span><span class="n">projection</span><span class="p">);</span>
+<span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">CWL_V_TRANSFORMATION_TEXTURE_PACKED</span><span class="p">,</span><span class="w"> </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">WORLD_TO_CAMERA</span><span class="p">,</span><span class="w"> </span><span class="n">origin_view</span><span class="p">);</span><span class="w"> </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">CWL_V_TRANSFORMATION_TEXTURE_PACKED</span><span class="p">,</span><span class="w"> </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">LOCAL_TO_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">local_to_world</span><span class="p">);</span>
+</code></pre></div>
+
 <h3>UBO SHADERS</h3>
-<p>First assign all your matrices like this as a uniform buffer object
-```cpp
-GLuint ltw_matrices_gl_name;
-glm::mat4 ltw_matrices[1024];</p>
-<p>// initialize all matrices to identity matrices
-for (int i = 0; i &lt; 1024; ++i) {
-    ltw_matrices[i] = glm::mat4(1.0f);
-}</p>
-<p>glGenBuffers(1, &amp;ltw_matrices_gl_name);
-glBindBuffer(GL_UNIFORM_BUFFER, ltw_matrices_gl_name);
-glBufferData(GL_UNIFORM_BUFFER, sizeof(ltw_matrices), ltw_matrices, GL_STATIC_DRAW);
-glBindBufferBase(GL_UNIFORM_BUFFER, 0, ltw_matrices_gl_name);
-```</p>
+<p>First assign all your matrices like this as a uniform buffer object</p>
+<div class="codehilite"><pre><span></span><code><span class="n">GLuint</span><span class="w"> </span><span class="n">ltw_matrices_gl_name</span><span class="p">;</span>
+<span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="w"> </span><span class="n">ltw_matrices</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+
+<span class="c1">// initialize all matrices to identity matrices</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ltw_matrices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ltw_matrices_gl_name</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">ltw_matrices_gl_name</span><span class="p">);</span>
+<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ltw_matrices</span><span class="p">),</span><span class="w"> </span><span class="n">ltw_matrices</span><span class="p">,</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+<span class="n">glBindBufferBase</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">ltw_matrices_gl_name</span><span class="p">);</span>
+</code></pre></div>
+
 <p>Then feel free to modify the <code>ltw_matrices</code> variable, each object you draw will contain an index into this array, and thus all you have to do is be sure you put the transform matrix you want to apply to a specific object in the right place, and then one time per frame be sure to upload the new matrices: </p>
-<p><code>cpp
-glBindBuffer(GL_UNIFORM_BUFFER, ltw_matrices_gl_name);
-glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ltw_matrices), ltw_matrices);
-glBindBuffer(GL_UNIFORM_BUFFER, 0);</code></p>
+<div class="codehilite"><pre><span></span><code><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">ltw_matrices_gl_name</span><span class="p">);</span>
+<span class="n">glBufferSubData</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ltw_matrices</span><span class="p">),</span><span class="w"> </span><span class="n">ltw_matrices</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div>
+
 <h2>notes for specific shaders</h2>
 <h4>TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</h4>
-<p>To set up this shader be sure to do the following:
-```cpp
-void setup_sdf_shader_uniforms(ShaderCache &amp;shader_cache) {
-    auto text_color = glm::vec3(0.5, 0.5, 1);
-    float char_width = 0.5;
-    float edge_transition = 0.1;</p>
-<pre><code>shader_cache.use_shader_program(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT);
+<p>To set up this shader be sure to do the following:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">setup_sdf_shader_uniforms</span><span class="p">(</span><span class="n">ShaderCache</span><span class="w"> </span><span class="o">&amp;</span><span class="n">shader_cache</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">text_color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">vec3</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">char_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">edge_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
 
-shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT, ShaderUniformVariable::TRANSFORM,
-                         glm::mat4(1.0f));
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">use_shader_program</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</span><span class="p">);</span>
 
-shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT, ShaderUniformVariable::RGB_COLOR,
-                         text_color);
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">TRANSFORM</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">));</span>
 
-shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT,
-                         ShaderUniformVariable::CHARACTER_WIDTH, char_width);
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">RGB_COLOR</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">text_color</span><span class="p">);</span>
 
-shader_cache.set_uniform(ShaderType::TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT,
-                         ShaderUniformVariable::EDGE_TRANSITION_WIDTH, edge_transition);
-shader_cache.stop_using_shader_program();
-</code></pre>
-<p>}
-```</p>
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">CHARACTER_WIDTH</span><span class="p">,</span><span class="w"> </span><span class="n">char_width</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">TRANSFORM_V_WITH_SIGNED_DISTANCE_FIELD_TEXT</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">EDGE_TRANSITION_WIDTH</span><span class="p">,</span><span class="w"> </span><span class="n">edge_transition</span><span class="p">);</span>
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">stop_using_shader_program</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_1024_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
 <h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_2048_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
 <h3>TEXTURE_PACKER_RIGGED_AND_ANIMATED_CWL_V_TRANSFORMATION_UBOS_4096_WITH_TEXTURES_AND_MULTIPLE_LIGHTS</h3>
@@ -106,7 +107,6 @@ shader_cache.stop_using_shader_program();
 <h2><a href='https://github.com/cpp-toolbox/shader_standard'>source code</a></h2>
 
 <h2>git submodule add --recurse-submodules git@github.com:cpp-toolbox/shader_standard.git</h2>
-</div>
 
 </body>
 </html>

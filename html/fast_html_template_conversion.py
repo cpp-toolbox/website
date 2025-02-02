@@ -16,7 +16,6 @@ def cpptbx_template_conversion(path_to_content_file: str, file_name: str, templa
     given will be within this copied directory, and over-writing on the file path `path_to_content_file` is
     a safe operation
     """
-    print("DEBOGGING THIS")
     # open the template
     with open(template_file, "r") as f:
         template_lines = f.readlines()
@@ -41,6 +40,12 @@ def cpptbx_template_conversion(path_to_content_file: str, file_name: str, templa
     # replace the body in the template with the body in the content file
     main_content_area_index = next(i for i, s in enumerate(template_lines) if "BODY" in s)
     template_lines[main_content_area_index] = template_lines[main_content_area_index].replace("BODY", content_string)
+
+    # because we do this on a different directory we remove the temporary directory from path
+    corrected_path = path_to_content_file.replace("generated_html/", "")
+    github_link_filename = next(i for i, s in enumerate(template_lines) if "FILENAME" in s)
+    template_lines[github_link_filename] = template_lines[main_content_area_index].replace("FILENAME", corrected_path)
+
 
     with open(path_to_content_file, "w") as f:
         contents = "".join(template_lines)

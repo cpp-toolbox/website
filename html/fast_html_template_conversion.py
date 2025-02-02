@@ -42,7 +42,7 @@ def cpptbx_template_conversion(path_to_content_file: str, file_name: str, templa
     template_lines[main_content_area_index] = template_lines[main_content_area_index].replace("BODY", content_string)
 
     # because we do this on a different directory we remove the temporary directory from path
-    corrected_path = path_to_content_file.replace("generated_html/", "")
+    corrected_path = path_to_content_file.replace("fh_generated_html/", "")
     github_link_filename = next(i for i, s in enumerate(template_lines) if "FILENAME" in s)
     template_lines[github_link_filename] = template_lines[github_link_filename].replace("FILENAME", corrected_path)
 

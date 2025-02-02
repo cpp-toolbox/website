@@ -8,9 +8,23 @@
 <h1>texture_packer</h1>
 <p>don't forget to the include the stb header in your <code>main.cpp</code></p>
 <div class="codehilite"><pre><span></span><code><span class="cp">#define STB_IMAGE_IMPLEMENTATION</span>
+<span class="cp">#define STB_IMAGE_WRITE_IMPLEMENTATION</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stb_image.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stb_image_write.h&gt;</span>
 </code></pre></div>
 
+<h1>usage</h1>
+<p>To use this you give the texture packer the directory that contains your images, then you pass the place wher eyou want to store the packed images, as well as the side length of the containers, each container shoudl have a power of two dimension and they will be squares. </p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">textures_directory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="p">(</span><span class="s">&quot;assets&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">output_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="p">(</span><span class="s">&quot;assets&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;packed_textures&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">container_side_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">TexturePacker</span><span class="w"> </span><span class="nf">texture_packer</span><span class="p">(</span><span class="n">textures_directory</span><span class="p">,</span><span class="w"> </span><span class="n">output_dir</span><span class="p">,</span><span class="w"> </span><span class="n">container_side_length</span><span class="p">);</span>
+<span class="w">    </span><span class="n">shader_cache</span><span class="p">.</span><span class="n">set_uniform</span><span class="p">(</span><span class="n">ShaderType</span><span class="o">::</span><span class="n">CWL_V_TRANSFORMATION_TEXTURE_PACKED</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">ShaderUniformVariable</span><span class="o">::</span><span class="n">PACKED_TEXTURE_BOUNDING_BOXES</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+
+<p>After createing a texture packer you must bind the uniform to 1, because it is a sampler and we bound that data to GL_TEXTURE1 when building the texture packer</p>
 <h2>texture coordinates</h2>
 <p>For the sake of brevity denote texture coordinate as tc. Normally if you want a texture to tile over your geometry you simply make the tc's outside of the [0, 1]x[0, 1] range. By doing that and setting specific opengl options the texture will automatically tile on that geometry.</p>
 <p>When using a texture container, recall that this allows for different geometry to use different images by sampling those images from the container, this is facilitated by allowing the geometry to use regular tc's as if they were on its own specific image, and then in the code there is a conversion done which transforms the regular tcs to "packed" tcs, these packed ones correctly specify where the texture resides within the context of the texture container.</p>

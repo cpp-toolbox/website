@@ -62,7 +62,7 @@ def create_html(project_name, md_html, dependencies):
     html_body_content += md_html
     
     html_body_content += f"\n<h2><a href='{github_url}'>source code</a></h2>\n"
-    html_body_content += f"\n<h2>git submodule add --recurse-submodules {ssh_url}</h2>\n"
+    html_body_content += f"\n<h2>git submodule add {ssh_url}</h2>\n"
 
     # Add dependencies list if any
     if dependencies:

@@ -3,12 +3,16 @@
 </p>
 <pre>
     <code>
-mkdir -p assets/
-git submodule add git@github.com:cpp-toolbox/shaders.git assets/shaders 
+cd assets
+git submodule add git@github.com:cpp-toolbox/shaders.git
+cd -
 
-mkdir -p src/graphics/
-git submodule add git@github.com:cpp-toolbox/batcher.git src/graphics/batcher 
-git submodule add git@github.com:cpp-toolbox/shader_cache.git src/graphics/shader_cache
+cd src/graphics
+git submodule add git@github.com:cpp-toolbox/batcher.git
+git submodule add git@github.com:cpp-toolbox/shader_cache.git
+git submodule add git@github.com:cpp-toolbox/window.git
+cd -
+
 
 python scripts/sbpt/main.py src
 git submodule update --init --recursive

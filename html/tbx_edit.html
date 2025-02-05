@@ -8,6 +8,7 @@
         This is what's to come:
     </p>
     <ul>
+        <li>make the search functionality just as good as nvim</li>
         <li>improve command runner to use regex-based command running</li>
         <li>improve the file opening and allow buffers</li>
         <li>allow window splitting through multiple viewports</li>
@@ -16,6 +17,11 @@
         <li>implementing a language server protocol client, and incorporating into editor</li>
         <li>syntax highlighting</li>
         <li>multiuser editing</li>
+        <ul>
+            <li>create an ModalEditingVieport class which holds a viewport and all the extra information needed to run the editor in single user mode</li>
+            <li>the server must hold a list of buffers and their current state, they cannot be unique to the viewport, so the viewport must point to that list</li>
+            <li>the ModalEditingViewports have the command string and on each iteration we check the string and the mode for each active viewport and then do modifications based on that.</li>
+        </ul>
         <li>snippit expansion</li>
         <li>windows/macos/linux installation wizard</li>
         <li>make icon</li>

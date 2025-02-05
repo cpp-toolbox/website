@@ -1,0 +1,30 @@
+<p>
+  We provide wrapping around enet to make life easier, we focus on client server networking:
+</p>
+
+here's the client setup
+<pre>
+  <code>
+cd src/networking
+git submodule add git@github.com:cpp-toolbox/client_networking.git
+git submodule add git@github.com:cpp-toolbox/packet_handler.git
+cd - 
+
+python scripts/sbpt/main.py src
+git submodule update --init --recursive
+  </code>
+</pre>
+
+for the server it's pretty much the same:
+
+<pre>
+  <code>
+cd src/networking
+git submodule add git@github.com:cpp-toolbox/server_networking.git
+git submodule add git@github.com:cpp-toolbox/packet_handler.git
+cd - 
+
+python scripts/sbpt/main.py src
+git submodule update --init --recursive
+  </code>
+</pre>

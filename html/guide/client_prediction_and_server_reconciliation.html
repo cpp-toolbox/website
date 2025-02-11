@@ -43,12 +43,53 @@
 </p>
 
 <p>
-    In either of the discussed cases, we have to make a bad decision. We either have to delay the server state or have a protocol in place when multiple updates come in at once.
+    In either of the discussed cases, we have to make a bad decision,
 </p>
+
+<h2>60Hz send rate and 512Hz sample rate with iterative update batching</h2>
+<h3>client</h3>
+<ul>
+    <li>processes inputs at 512Hz and updates the local game state at this rate</li>
+    <li>sends to the server at a rate of 60Hz, meaning that around 8 game inputs get to sent to the server in a batch</li>
+</ul>
+
+<h3>server</h3>
+<ul>
+    <li>processing inputs and updates the game state at 60Hz</li>
+    <li>sends out game updates at 60Hz</li>
+</ul>
+
+<h3>end to end explanation</h3>
+
+<p>
+    the client processes inputs at a rate of 512Hz, for each tick, a potentially unique input snapshot is captured as well as a delta time, the input snapshot and the delta time are used to update the game state. The delta time is roughly 1/512 seconds long, but there will be some error, on average the delta times should average out to very close to 1/512 seconds.
+</p>
+
+<p>
+    the client sends out information to the server at a rate of 60Hz, thus approximately 8 game ticks occur between consecutive server updates, as mentioned all 8 game ticks yield 8 unique (input_snapshot, delta_time) pairs.
+</p>
+<p>
+    In the <b>iterative batching</b> version of the algorithm all 8 of the input snapshots are sent over as a bundle to the server. When the server receives this bundle during its game tick it will unpack all events and simulate each one 
+</p>
+
+<ol>
+    <li>On the next server game tick, process all events at once using</li>
+</ol>
 
 <h2>the batching linearity property</h2>
 <p>
     as we mentioned before we want be able to actually update the game state at ta rate equal to 512, if we send out at 60Hz, then there is a property that can be taken advantage of. Since on each tic, there will be approximately
+</p>
+
+
+<h2>60Hz send rate and 512Hz sample rate with combine update batching</h2>
+<p>
+    This is the same as the other one, but here we batch together updates and then only send one update to the server, this makes the rate of game updates produced the same as the tick rate of the server.
+</p>
+
+<h2>multiple game ticks on the server</h2>
+<p>
+    even when the above is true there's problems... when two updates get to the server that's the problem, just use one of them?
 </p>
 
 <h2>update isolation</h2>

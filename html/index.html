@@ -118,33 +118,32 @@
     </ul>
 </fieldset>
 
-
-
 <fieldset>
-    <legend><h2>Setting up a MWE (minimal working example)</h2> </legend>
+    <legend><h2>Setting up a Project</h2> </legend>
     <p>The projects in this repo should do one thing well, and only do that. Try not to have multiple goals when creating new projects in this organization.</p>
     <p>All projects use submodules to facilitate the integration of subprojects. Subprojects need to be set up to link to each other using <code>sbpt</code>. For managing external libraries, we use <code>conan</code>, so install it on your system and follow their docs for preliminary setup on how to generate a profile before you run any conan commands.</p>
 
     <p>First, <code>cd</code> into the root of the project, then:</p>
     <pre>
-        # get all subproject content
-        git submodule update --init --recursive
+        # clone the project with all the submodules 
+        git clone --recurse-submodules -j8 GITHUB_SSH_LINK_HERE  
+        cd JUST_CLONED_DIR
 
         # generate dynamic includes to linked subprojects
         python scripts/sbpt/main.py src
 
-        # if using batcher
-        python scripts/setup/batcher.py
+        # if using graphical systems
+        python scripts/setup/graphics_systems.py
 
         # install required packages
         conan install . --build=missing
 
-        # generate build system and then build
-        cmake --preset conan-release
+        # generate build system and then build, if you are on windows in the first command change release to default
+        cmake --preset conan-release 
         cmake --build --preset conan-release
-
-        cd build/Release
+        
         # now run the executable
+        ./build/Release/EXECUTABLE_NAME
     </pre>
     <p>From there, run the executable. Note that if you try running the executable from anywhere else, it will probably fail because it depends on paths of resources being relative to this folder, which may be fixed in the future.</p>
     <p>If you are looking to develop existing code, note that we use a consistent style guide to keep things organized. We use <code>clang-format</code> for this. To populate the project with the correct settings, go to the root of the project and do:</p>

@@ -1,0 +1,29 @@
+<p>
+  In this article, we're going to talk about client-server interactions with animations and projectiles. For the sake of simplicity, we'll focus on a rocket launcher so we're all on the same page.
+</p>
+
+<p>
+  When you're firing a rocket launcher, it is rate-limited so that you can't just hold the mouse down and spam rockets. Suppose it's rate-limited at 1Hz, meaning you can only fire one rocket per second. In a single-player setup, this is simple—you just use the same rate limiter to control both the creation of the rocket and the playing of the firing animation.
+</p>
+
+<p>
+  This setup becomes more complex in a client-server architecture. The general idea is that rockets are almost entirely server-side entities and are not usually predicted. It is possible to do lag compensation on rockets, but it's fairly complicated. For this setup, we’re going to assume you render rockets only once you receive them from the server. This means that when you click to fire your rocket launcher, you won’t see the rocket until the packet with it arrives from the server.
+</p>
+
+<p>
+  Since we’re not using lag compensation on rockets, playing the firing animation immediately helps to mask the delay, making the system feel more responsive. This means there is a rate limiter for the rocket launcher animation on the client, as well as one on the server. For the most part, this works fine, but a situation you might encounter is that the client-side animation runs, yet no rocket spawns.
+</p>
+
+<p>
+  This occurs because the keyboard-mouse update (KMU1) that starts the fire animation also starts the rocket creation timer on the server. Then, when the user clicks again and KMU2 activates the fire animation on the client, KMU2 should—ideally—also trigger the next rocket to be created on the server. But sometimes it doesn’t. The issue stems from the fact that packets can take different amounts of time to reach the server. Suppose KMU1 takes *t1* seconds to get to the server, and KMU2 takes *t2* seconds. If *t1 = t2*, a rocket will get created. If *t1 < t2*, a rocket will also get created because it arrives after the required rate-limiting interval has passed. But if *t1 > t2*, then KMU1 took longer to arrive than KMU2, meaning the rate limiter on the server has not yet surpassed the required elapsed time—so the rocket does not get created.
+</p>
+
+<h1>Solution</h1>
+
+<p>
+  The problem of packet delay variability is an inherent part of networking and not something we can fully control. Therefore, we need a rate limiter that can account for this. Since the rate limiter is rejecting KMU2 on the server because not enough time has elapsed, one idea might be to reduce the cooldown time on the server’s rate limiter. While that could work, if packets are arriving as usual and the user is holding down the fire button, rockets would eventually desync from the animation, as they could be fired at a faster rate than intended.
+</p>
+
+<p>
+  The final solution is to have a rate limiter that runs at the same rate as the client's, but allows for a small window of leniency. This rate limiter can allow the action to run again even if not all the required time has elapsed. However, if this early trigger occurs, the timer does not reset—instead, it continues waiting until the full cooldown period has passed. This ensures that if the user holds down the fire button, the two systems won’t drift out of sync, while still allowing for slightly delayed packets to succeed.
+</p>

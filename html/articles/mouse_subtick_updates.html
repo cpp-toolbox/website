@@ -1,13 +1,13 @@
 <p>
-  In this article, we're going to talk about **mouse subtick updates** in a client-server setup. The main point is this: when you have a monitor that can render at **144Hz or higher**, updating the view (i.e. the camera's yaw and pitch) at this high rate allows the game to fully take advantage of the display’s refresh capabilities.
+  In this article, we're going to talk about <strong>mouse subtick updates</strong> in a client-server setup. The main point is this: when you have a monitor that can render at <strong>144Hz or higher</strong>, updating the view (i.e. the camera's yaw and pitch) at this high rate allows the game to fully take advantage of the display’s refresh capabilities.
 </p>
 
 <p>
-  However, in a traditional client-server game setup, state updates from the server typically arrive at **60Hz or lower**. If we relied solely on these updates to adjust the camera, then we’d be limited to 60 updates per second — far below what high refresh rate monitors are capable of displaying.
+  However, in a traditional client-server game setup, state updates from the server typically arrive at <strong>60Hz or lower</strong>. If we relied solely on these updates to adjust the camera, then we’d be limited to 60 updates per second — far below what high refresh rate monitors are capable of displaying.
 </p>
 
 <p>
-  In this article, we’ll describe a simple but powerful solution using **client prediction** and **server reconciliation** — concepts commonly used in multiplayer games. Our approach focuses on local responsiveness, specifically how we process **mouse movement** on the client side.
+  In this article, we’ll describe a simple but powerful solution using <strong>client prediction</strong> and <strong>server reconciliation</strong> — concepts commonly used in multiplayer games. Our approach focuses on local responsiveness, specifically how we process <strong>mouse movement</strong> on the client side.
 </p>
 
 <h2>Mouse Movement Processing</h2>
@@ -19,7 +19,7 @@
 <p style="text-align: center;"><strong>(x₁, y₁), (x₂, y₂), …</strong></p>
 
 <p>
-  To compute how the camera should rotate, we calculate **mouse deltas** between each pair of consecutive positions:
+  To compute how the camera should rotate, we calculate mouse deltas between each pair of consecutive positions:
 </p>
 
 <p style="text-align: center;"><strong>Δx = x₂ - x₁</strong><br><strong>Δy = y₂ - y₁</strong></p>
@@ -49,7 +49,7 @@
 </p>
 
 <p>
-  Notice this is a **telescoping sum**, and all intermediate terms cancel out, leaving:
+  Notice this is a telescoping sum, and all intermediate terms cancel out, leaving:
 </p>
 
 <p style="text-align: center;">
@@ -57,9 +57,8 @@
 </p>
 
 <p>
-  This means that no matter how frequently we sample the input, the total camera movement is the same over the same time period. In other words, **higher sampling just gives us smoother interpolation**, not fundamentally different results.
+  This means that no matter how frequently we sample the input, the total camera movement is the same over the same time period. In other words, higher sampling just gives us smoother interpolation, not fundamentally different results.
 </p>
-
 
 <h2>Subtick Mouse Updates in Client-Server Games</h2>
 
@@ -111,5 +110,5 @@
 </p>
 
 <p>
-  Subtick mouse updates are not only possible — they're **surprisingly simple** to implement. By running local, high-frequency input updates and syncing with the server using coarser snapshots, we achieve both high responsiveness and server-authoritative correctness, with minimal overhead.
+  Subtick mouse updates are not only possible — they're <strong>surprisingly simple</strong> to implement. By running local, high-frequency input updates and syncing with the server using coarser snapshots, we achieve both high responsiveness and server-authoritative correctness, with minimal overhead.
 </p>

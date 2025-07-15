@@ -1,0 +1,115 @@
+<p>
+  In this article, we're going to talk about **mouse subtick updates** in a client-server setup. The main point is this: when you have a monitor that can render at **144Hz or higher**, updating the view (i.e. the camera's yaw and pitch) at this high rate allows the game to fully take advantage of the display’s refresh capabilities.
+</p>
+
+<p>
+  However, in a traditional client-server game setup, state updates from the server typically arrive at **60Hz or lower**. If we relied solely on these updates to adjust the camera, then we’d be limited to 60 updates per second — far below what high refresh rate monitors are capable of displaying.
+</p>
+
+<p>
+  In this article, we’ll describe a simple but powerful solution using **client prediction** and **server reconciliation** — concepts commonly used in multiplayer games. Our approach focuses on local responsiveness, specifically how we process **mouse movement** on the client side.
+</p>
+
+<h2>Mouse Movement Processing</h2>
+
+<p>
+  We assume that mouse input on the client arrives as a sequence of 2D screen positions:
+</p>
+
+<p style="text-align: center;"><strong>(x₁, y₁), (x₂, y₂), …</strong></p>
+
+<p>
+  To compute how the camera should rotate, we calculate **mouse deltas** between each pair of consecutive positions:
+</p>
+
+<p style="text-align: center;"><strong>Δx = x₂ - x₁</strong><br><strong>Δy = y₂ - y₁</strong></p>
+
+<p>
+  These deltas are scaled by a sensitivity factor <strong>s</strong> to yield changes in yaw and pitch:
+</p>
+
+<p style="text-align: center;"><strong>Δyaw = s × Δx</strong><br><strong>Δpitch = s × Δy</strong></p>
+
+<h2>Single-Player Case</h2>
+
+<p>
+  In a single-player scenario, suppose the user moves the mouse from point <strong>a = (a₁, a₂)</strong> to point <strong>b = (b₁, b₂)</strong> over 1 second. If the system samples mouse input at 5Hz, we would get a sequence of intermediate points:
+</p>
+
+<p style="text-align: center;"><strong>a, p₁, p₂, p₃, b</strong></p>
+
+<p>
+  Then, the total camera rotation over that time would be computed as:
+</p>
+
+<p style="text-align: center;">
+  <strong>
+    Δyaw_total = s × [(p₁ - a) + (p₂ - p₁) + (p₃ - p₂) + (b - p₃)]
+  </strong>
+</p>
+
+<p>
+  Notice this is a **telescoping sum**, and all intermediate terms cancel out, leaving:
+</p>
+
+<p style="text-align: center;">
+  <strong>Δyaw_total = s × (b - a)</strong>
+</p>
+
+<p>
+  This means that no matter how frequently we sample the input, the total camera movement is the same over the same time period. In other words, **higher sampling just gives us smoother interpolation**, not fundamentally different results.
+</p>
+
+
+<h2>Subtick Mouse Updates in Client-Server Games</h2>
+
+<p>
+  The insight from the single-player case applies directly to a client-server setup. On the client, we update the view immediately using incoming mouse positions. Each mouse movement results in a change in yaw and pitch, which directly affects the camera's orientation — and we apply these updates as frequently as possible.
+</p>
+
+<p>
+  Meanwhile, the client sends mouse positions to the server at a slower, coarser rate. Suppose we send the Nth mouse position:  
+  <strong>(x, y)</strong>. This gets processed on the server, which uses it to update the server-side view of the character. The server then sends a response back to the client containing:
+</p>
+
+<ul>
+  <li>The server’s computed yaw and pitch after processing the Nth update.</li>
+  <li>The index <strong>N</strong> corresponding to the update the server processed.</li>
+</ul>
+
+<p>
+  When the client receives this correction, it performs a reconciliation step. First, it sets its yaw and pitch to the values received from the server. Then, it re-applies all mouse deltas that occurred after the Nth position — i.e., all updates that the server hasn't seen yet.
+</p>
+
+<p>
+  The goal is for the resulting yaw and pitch on the client to match what was predicted before the correction. This will happen as long as the yaw/pitch delta computed from the Nth update was the same on both the client and the server.
+</p>
+
+<p>
+  Here's why that's true: the yaw pitch delta is computed from mouse movement using:
+</p>
+
+<p style="text-align: center;">
+  <strong>Δyaw = s × (x₂ - x₁)</strong><br>
+  <strong>Δpitch = s × (y₂ - y₁)</strong>
+</p>
+
+<p>
+  Even if the client processes many fine-grained intermediate updates between two points <strong>a</strong> and <strong>b</strong>, the total effect is:
+</p>
+
+<p style="text-align: center;">
+  <strong>s × (b - a)</strong>
+</p>
+
+<p>
+  — exactly the same as what the server computes with its coarser sampling. Because this computation is additive and telescopes to the same result, both the client and server end up with the same yaw/pitch after processing the Nth update.
+</p>
+
+<p>
+  Therefore, when the client re-applies the deltas from mouse updates after <strong>N</strong>, the final yaw and pitch match the original prediction. There's no discrepancy between predicted and reconciled state.
+</p>
+
+<p>
+  Subtick mouse updates are not only possible — they're **surprisingly simple** to implement. By running local, high-frequency input updates and syncing with the server using coarser snapshots, we achieve both high responsiveness and server-authoritative correctness, with minimal overhead.
+</p>

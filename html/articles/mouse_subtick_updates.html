@@ -112,3 +112,130 @@
 <p>
   Subtick mouse updates are not only possible — they're <strong>surprisingly simple</strong> to implement. By running local, high-frequency input updates and syncing with the server using coarser snapshots, we achieve both high responsiveness and server-authoritative correctness, with minimal overhead.
 </p>
+
+<h1>understanding it in practice</h1>
+
+<p>We will visually explore how this algorithm works in practice to help make the concepts described here more concrete.</p>
+
+<pre><code>
+   m1  m2  m3  m4  m5  m6  m7  m8  m9  m10 m11 m12 m13 m14 m15 m16 m17 m18 m19
+   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .       (client ticks)
+---|-----------------------|-----------------------|-----------------------| 
+   \    ^                  \    ^                  \    ^       
+    \  /                    \  /                    \  /       
+     \/                      \/                      \/       
+     /\                      /\                      /\      
+    /  \                    /  \                    /  \    
+   /    \                  /    \                  /    \  
+  /      \                /      \                /      \
+ /        \              /        \              /        \
+/          v            /          v            /          v
+|-----------------------|-----------------------|-----------------------| 
+GU1:(sy1, sp1)          GU2:(sy2, sp2)          GU3:(sy3, sp3)           (s[y/p]x: server [yaw/pitch] x)
+</code></pre>
+
+<p>On the top we have the client ticking along with mouse updates of the form mx: (sx, sy) where these are screen coordinates, recall that whenever a new one is recorded we compute a mouse delta by subtracting the two, then we scale this by a sensitivity factor to produce a mouse yaw pitch, and then add that to the current yaw pitch of the camera. Also lets assume that there is a camera object and it has a function called update which takes in a mouse screen position and updates all that internally. In this light what we've discovered previously is that given a bunch of screen positions recorded s1, s2, s3, s4, s5 (these are tuples), then the state of the camera (it's yaw pitch) will be the same whether we do:</p>
+
+<pre><code>
+camera.update(s1);
+camera.update(s5);
+</code></pre>
+
+<p>or if we do</p>
+
+<pre><code>
+camera.update(s1);
+camera.update(s2);
+camera.update(s3);
+camera.update(s4);
+camera.update(s5);
+</code></pre>
+
+<p>We call call this the <strong>TELESCOPING PROPERTY</strong></p>
+
+<p>Now lets explore why our algorithm works, on the client lets assume that after processing mx: (sx, yx) it produces a yaw pitch in the camera of (yx, px). When we receive GU3 our yaw pitch was (y14, p14) but that game update contained we just received (sy3, sp3) and we clobber our current yaw pitch on the client with that. Additionally in that game update there was a mouse update number specifying what the last processed mouse pos update number was which in this case would be m7, therefore all the mouse updates that were simulated on the client since that one which would be: m8, m9, m10, m11, m12, m13, m14 and we reapply those on the camera using the update function, we obtain some resulting yaw pitch called (y, p), and if everything went right we want it to be that (y, p) = (y14, p14), in the code we're trying to compare if the camera's state would be equal whether we did A or B</p>
+
+<p><strong>A: RECONCILED</strong></p>
+<pre><code>
+camera.set_yaw_pitch(sy3, sp3);
+camera.update(m8);
+camera.update(m9);
+camera.update(m10);
+camera.update(m11);
+camera.update(m12);
+camera.update(m13);
+camera.update(m14);
+</code></pre>
+
+<p><strong>B:</strong></p>
+<pre><code>
+camera.set_yaw_pitch(sy2, sp2)  |
+camera.update(m2);              |
+camera.update(m3);              |
+camera.update(m4);              | PREV RECONCILIATION
+camera.update(m5);              | 
+camera.update(m6);              |
+camera.update(m7);              | 
+camera.update(m8);              
+camera.update(m9);
+camera.update(m10);
+camera.update(m11);
+camera.update(m12);
+camera.update(m13);
+camera.update(m14);
+</code></pre>
+
+<p>Since both share the same updating procedures for m8-m14 then these states are only equal if A' and B' produce the same camera state</p>
+
+<p><strong>A': RECONCILED</strong></p>
+<pre><code>
+camera.set_yaw_pitch(sy3, sp3);
+</code></pre>
+
+<p><strong>B':</strong></p>
+<pre><code>
+camera.set_yaw_pitch(sy2, sp2) 
+camera.update(m3);              
+camera.update(m4);              
+camera.update(m5);              
+camera.update(m6);              
+camera.update(m7);              
+</code></pre>
+
+<p>This is easier to understand, the pair (sy3, sp3) was produced on the server, the sequence of mouse updates received by the server over the whole interaction up until this point was m1 and m7, therefore (sy3,sp3) was the state of the camera after the following sequence of events:</p>
+
+<pre><code>
+Camera camera; (initializes with a yaw pitch of (0, 0), and m0 = (0, 0))
+camera.update(m1) <- This produces (sy2, sp2)
+camera.update(m7) <- This produces (sy3, sp3)
+</code></pre>
+
+<p>Thus we can re-write again to this form:</p>
+
+<p><strong>A'': RECONCILED</strong></p>
+<pre><code>
+Camera camera; 
+camera.update(m1) 
+camera.update(m7) 
+</code></pre>
+
+<p><strong>B'':</strong></p>
+<pre><code>
+Camera camera; 
+camera.update(m1);
+camera.update(m3);              
+camera.update(m4);              
+camera.update(m5);              
+camera.update(m6);              
+camera.update(m7);              
+</code></pre>
+
+<p>But then by the telescoping property we know that B'' is equivalent to:</p>
+
+<pre><code>
+Camera camera; 
+camera.update(m1);
+camera.update(m7);              
+</code></pre>
+
+<p>Therefore we can deduce that the camera state after the sequence events A is the same as the one after the sequence of events B, therefore we know that (y, p) = (y14, p14) meaning that after reconcilation in theory there is no delta and the camera does not twitch or anything. We've only proved this holds true for a small example, but really what we've done is shown that when client and server have a shared yaw pitch value, that in the future their yaw pitch value will continue matching up, what's really going on here is that we've proven a sort of base case, where both of them start with a yaw pitch of (0, 0), and that after reconcilation client and server still match, thus by induction this pattern should keep occuring over and over.</p>

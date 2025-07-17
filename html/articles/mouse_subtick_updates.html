@@ -242,4 +242,40 @@ camera.update(m7);
 Thus A'' and B'' are equivalent so that A' and B' are quivalent and thus A and B are equivalent (aka produce the same camera state).
 
 <p>
-  Therefore we can deduce that the camera state after the sequence events A is the same as the one after the sequence of events B, therefore we know that (y, p) = (y14, p14) meaning that after reconcilation in theory there is no delta and the camera does not twitch or anything. We've only proved this holds true for a small example, but really what we've done is shown that when client and server have a shared yaw pitch value, that in the future their yaw pitch value will continue matching up, what's really going on here is that we've proven a sort of base case, where both of them start with a yaw pitch of (0, 0), and that after reconcilation client and server still match, thus by induction this pattern should keep occuring over and over.</p>
+  Therefore we can deduce that the camera state after the sequence events A is the same as the one after the sequence of events B, therefore we know that (y, p) = (y14, p14) meaning that after reconcilation in theory there is no delta and the camera does not twitch or anything. We've only proved this holds true for a small example, but really what we've done is shown that when client and server have a shared yaw pitch value, that in the future their yaw pitch value will continue matching up, what's really going on here is that we've proven a sort of base case, where both of them start with a yaw pitch of (0, 0), and that after reconcilation client and server still match, thus by induction this pattern should keep occuring over and over.
+</p>
+
+<h1>hitscan and subtick updates</h1>
+<p>Now that we understand how we can use subtick mouse updates to make the camera smooth, we'll now actually talk about how we can use subtick to give players an actual edge in-game.</p>
+
+<p>Note that if we allow subtick updates to give players an edge in-game, then your game is slightly more pay-to-win than if not, but I actually don't think that matters too much. If you're going to invest in hardware such as a monitor to get more in-game frames, then squeezing out as much value out of that investment seems like a good idea. So in my mind, this isn't actually a pay-to-win feature, but rather a bang-for-your-buck feature.</p>
+
+<p>Additionally, in the realm of the toolbox engine, we already can get 300+ fps on old ass hardware, and so you don't even need a great monitor to feel benefits. Actually, even if you had a 60 fps monitor but your game ran at like 144 fps and your mouse's poll rate was at least that, you'd be getting more accurate shots. Your brain would just have to interpolate between the frames a little more, but the game would actually have a higher precision when firing.</p>
+
+<p>Ok, so with that out of the way let's get into how this would actually work. First, let's go back to our previous diagram and see how firing fits into all of this. First of all, on your average server, if you have 50ms of ping then if we didn't do any sort of client work, shots are going to feel delayed. It's already been seen that humans can detect at least 13ms of input lag—for me I can detect like 9ms of lag—so 50ms of lag is going to be noticeable. In order to correct for this, we need to do some aspect of hitscan on the client to make it feel like we're firing straight away.</p>
+
+<pre><code>
+   m1  m2  m3  m4  m5  m6  m7  m8  m9  m10 m11 m12 m13 m14 m15 m16 m17 m18 m19
+   .   .   .   .   .   .   .   .   .   x   x   x   .   .   .   .   .   .   .       (client ticks, now x represents fire is clicked)
+---|-----------------------|-----------------------|-----------------------| 
+   \    ^                  \    ^                  \    ^       
+    \  /                    \  /                    \  /       
+     \/                      \/                      \/       
+     /\                      /\                      /\      
+    /  \                    /  \                    /  \    
+   /    \                  /    \                  /    \  
+  /      \                /      \                /      \
+ /        \              /        \              /        \
+/          v            /          v            /          v
+|-----------------------|-----------------------|-----------------------| 
+GU1:(sy1, sp1)          GU2:(sy2, sp2)          GU3:(sy3, sp3)           (s[y/p]x: server [yaw/pitch] x)
+</code></pre>
+
+<p><strong>NOTE:</strong> I actually decided I don't need to work on this component of this yet, because I want to test and see if this is something people would actually complain about. Additionally, I have played 3k+ hours of TF2 and it's fine, and it doesn't have this feature: 
+<a href="https://www.youtube.com/watch?v=EKmdTwQReFQ" target="_blank">https://www.youtube.com/watch?v=EKmdTwQReFQ</a> and 
+<a href="https://www.youtube.com/watch?v=RmuoWDzVZ9U" target="_blank">https://www.youtube.com/watch?v=RmuoWDzVZ9U</a></p>
+
+<p>If I do come back to this then this is the general idea:</p>
+
+<p>If a fire event is detected locally, you run that and play a hitsound, then you compute like "how far" you were in terms of mouse pos updates to the server when you fire, and then that is used on the server to do a more accurate shot.</p>
+

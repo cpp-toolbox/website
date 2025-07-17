@@ -223,6 +223,7 @@ camera.update(m7)
 <pre><code>
 Camera camera; 
 camera.update(m1);
+camera.update(m2);
 camera.update(m3);              
 camera.update(m4);              
 camera.update(m5);              
@@ -238,4 +239,7 @@ camera.update(m1);
 camera.update(m7);              
 </code></pre>
 
-<p>Therefore we can deduce that the camera state after the sequence events A is the same as the one after the sequence of events B, therefore we know that (y, p) = (y14, p14) meaning that after reconcilation in theory there is no delta and the camera does not twitch or anything. We've only proved this holds true for a small example, but really what we've done is shown that when client and server have a shared yaw pitch value, that in the future their yaw pitch value will continue matching up, what's really going on here is that we've proven a sort of base case, where both of them start with a yaw pitch of (0, 0), and that after reconcilation client and server still match, thus by induction this pattern should keep occuring over and over.</p>
+Thus A'' and B'' are equivalent so that A' and B' are quivalent and thus A and B are equivalent (aka produce the same camera state).
+
+<p>
+  Therefore we can deduce that the camera state after the sequence events A is the same as the one after the sequence of events B, therefore we know that (y, p) = (y14, p14) meaning that after reconcilation in theory there is no delta and the camera does not twitch or anything. We've only proved this holds true for a small example, but really what we've done is shown that when client and server have a shared yaw pitch value, that in the future their yaw pitch value will continue matching up, what's really going on here is that we've proven a sort of base case, where both of them start with a yaw pitch of (0, 0), and that after reconcilation client and server still match, thus by induction this pattern should keep occuring over and over.</p>

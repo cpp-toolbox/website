@@ -10,3 +10,45 @@
 [submodule "scripts/fast-html"]
 	path = scripts/fast-html
 	url = git@github.com:simple-web-tools/fast-html.git
+[submodule "code/scripts"]
+	path = code/scripts
+	url = git@github.com:cpp-toolbox/scripts.git
+[submodule "code/src/utility/meta_utils"]
+	path = code/src/utility/meta_utils
+	url = git@github.com:cpp-toolbox/meta_utils.git
+[submodule "code/src/utility/text_utils"]
+	path = code/src/utility/text_utils
+	url = git@github.com:cpp-toolbox/text_utils.git
+[submodule "code/src/utility/regex_utils"]
+	path = code/src/utility/regex_utils
+	url = git@github.com:cpp-toolbox/regex_utils.git
+[submodule "code/src/utility/fs_utils"]
+	path = code/src/utility/fs_utils
+	url = git@github.com:cpp-toolbox/fs_utils.git
+[submodule "code/src/utility/cpp_parsing"]
+	path = code/src/utility/cpp_parsing
+	url = git@github.com:cpp-toolbox/cpp_parsing.git
+[submodule "code/src/utility/logger"]
+	path = code/src/utility/logger
+	url = git@github.com:cpp-toolbox/logger.git
+[submodule "code/src/utility/collection_utils"]
+	path = code/src/utility/collection_utils
+	url = git@github.com:cpp-toolbox/collection_utils.git
+[submodule "code/src/graphics/vertex_geometry"]
+	path = code/src/graphics/vertex_geometry
+	url = git@github.com:cpp-toolbox/vertex_geometry.git
+[submodule "code/src/graphics/draw_info"]
+	path = code/src/graphics/draw_info
+	url = git@github.com:cpp-toolbox/draw_info.git
+[submodule "code/src/utility/glm_printing"]
+	path = code/src/utility/glm_printing
+	url = git@github.com:cpp-toolbox/glm_printing.git
+[submodule "code/src/utility/transform"]
+	path = code/src/utility/transform
+	url = git@github.com:cpp-toolbox/transform.git
+[submodule "code/src/utility/unique_id_generator"]
+	path = code/src/utility/unique_id_generator
+	url = git@github.com:cpp-toolbox/unique_id_generator.git
+[submodule "code/src/utility/turns"]
+	path = code/src/utility/turns
+	url = git@github.com:cpp-toolbox/turns.git

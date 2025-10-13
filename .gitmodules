@@ -115,3 +115,9 @@
 [submodule "code/src/utility/expiring_temporal_vector"]
 	path = code/src/utility/expiring_temporal_vector
 	url = git@github.com:cpp-toolbox/expiring_temporal_vector.git
+[submodule "code/src/utility/periodic_signal"]
+	path = code/src/utility/periodic_signal
+	url = git@github.com:cpp-toolbox/periodic_signal.git
+[submodule "code/src/graphics/ui_render_suite_implementation"]
+	path = code/src/graphics/ui_render_suite_implementation
+	url = git@github.com:cpp-toolbox/ui_render_suite_implementation.git

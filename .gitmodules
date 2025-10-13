@@ -121,3 +121,6 @@
 [submodule "code/src/graphics/ui_render_suite_implementation"]
 	path = code/src/graphics/ui_render_suite_implementation
 	url = git@github.com:cpp-toolbox/ui_render_suite_implementation.git
+[submodule "code/src/utility/temporal_binary_switch"]
+	path = code/src/utility/temporal_binary_switch
+	url = git@github.com:cpp-toolbox/temporal_binary_switch.git

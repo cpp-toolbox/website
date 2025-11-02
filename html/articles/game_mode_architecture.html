@@ -1,0 +1,53 @@
+<h1>Game Modes</h1>
+
+
+<p>Always derived from a physics simulation where characters interact with each other using hitscan or projectile weapons.</p>
+
+
+<section id="overview">
+<h2>Overview</h2>
+<ul>
+<li>In general you filter based on game mode, and then you can select a supported map.</li>
+<li>Maps can support multiple game modes, so a game mode contains a map.</li>
+</ul>
+</section>
+
+
+<section id="server">
+<h2>Server</h2>
+<ul>
+<li>Takes in <code>client_id_to_server_character</code> and constructs a <code>client_id_to_gamemode_character</code> (or something of this form).</li>
+<li>A game mode is a system which has custom logic of the form:</li>
+</ul>
+
+
+<pre><code>logic_when_shot_by_hitscan_weapon(attacker, victim)</code></pre>
+
+
+<ul>
+<li>Each parameter is a gamemode character.</li>
+<li>Each gamemode has an update function and internal state.</li>
+<li>The main loop calls the update function of whatever game mode is active.</li>
+</ul>
+</section>
+
+
+<section id="client">
+<h2>Client</h2>
+<p>Consider what client data is required to render the game mode:</p>
+<ul>
+<li>Custom objects that only exist for that game mode (e.g. flags in CTF).</li>
+<li>Custom leaderboards.</li>
+<li>Endscreen UIs and other UI state specific to the gamemode.</li>
+</ul>
+</section>
+
+
+<section id="networking">
+<h2>Networking / Packets</h2>
+<p>After identifying what data is required to completely render the gamemode, define the packets that contain that information.</p>
+
+
+<p>The server gamemode should expose a function that returns the <strong>GameState</strong> for that gamemode; that packet is then sent to clients.</p>
+
+</section>

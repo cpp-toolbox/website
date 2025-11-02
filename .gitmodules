@@ -124,3 +124,12 @@
 [submodule "code/src/utility/temporal_binary_switch"]
 	path = code/src/utility/temporal_binary_switch
 	url = git@github.com:cpp-toolbox/temporal_binary_switch.git
+[submodule "code/src/utility/reactive_unordered_map"]
+	path = code/src/utility/reactive_unordered_map
+	url = git@github.com:cpp-toolbox/reactive_unordered_map.git
+[submodule "code/src/utility/signal_emitter"]
+	path = code/src/utility/signal_emitter
+	url = git@github.com:cpp-toolbox/signal_emitter.git
+[submodule "code/src/utility/state_machine"]
+	path = code/src/utility/state_machine
+	url = git@github.com:cpp-toolbox/state_machine.git

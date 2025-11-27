@@ -1,0 +1,32 @@
+<p>When making client-server multiplayer games, one important component that needs to be accounted for is the fact that the internet is not perfect. Due to the imperfections of the internet, you will encounter sub-optimal situations. These situations are almost guaranteed to arise, and your system must account for them.</p>
+
+<p>Another component that makes testing hard is that these suboptimal situations usually occur at random times. If you want to test whether your system is robust to these types of problems, simply waiting or hoping the particular situation occurs over the internet is not viable. Instead, you need to explicitly test these situations. In this article, we'll discuss how you can do this.</p>
+
+<p>You'll always want to base your testing on real situations that occur. You can push it to the extreme if you're curious, but you should always focus on things that you've actually seen occur over the network. In this way, you're using a minimal working example programming style so that you can get things off the ground fast and fix bugs which affect the largest number of people.</p>
+
+<p>In order to test real network situations repeatedly, we actually need to subtract the network from the equation entirely. This is because having a network introduces randomness, which again makes it impossible to test things consistently.</p>
+
+<h2>Understanding State and State Update Data</h2>
+<p>Before we continue, we should discuss what we mean by "state" and "state update data." A system has an initial state and a function which takes in state update data and modifies the internal state of the system.</p>
+
+<p>To make that more concrete, we can think of both the client and the server in this networked setup as systems. If we focus on the client, the state could be considered as the output onto the monitor, and the state update data as the interaction you have with it via the mouse and keyboard. However, this is a naive way of thinking about things. Different resolutions or minor deviations in how the graphics card renders frames would then be considered different states. Instead, we should think of the internal state within the program.</p>
+
+<p>The state of your program is specific to your project. In a multiplayer FPS game, the state usually consists of the physics state of every entity (transform, velocity). For the local player, it is the same, because they are also part of the simulation. You then need to consider other aspects: does the position get set by any other system? Does the movement logic have internal state that affects the new velocity? All of that is part of your program's state.</p>
+
+<p>The update data consists of inputs such as the keyboard and mouse state, packets received on the network, and any delta times measured from clocks used to update the game. As you can see, update data almost entirely consists of information produced by non-deterministic sources.</p>
+
+<p>Even though your system might consist of many calls throughout the main loop tick, it should theoretically be possible to extract all the logic into a black box, then pass in the update data to produce a new internal state. This allows us to consider the client as a system as defined earlier.</p>
+
+<h2>Recording and Playing Back Networked States</h2>
+<p>During a real session connected to the server, we can enumerate each time the update function of the system is called and store the update data used in a file. Enumerating the iteration that the update data was processed on is important; we can't trust timing devices to recreate the exact moment a client received a packet or input, as that is not deterministic.</p>
+
+<p>To replicate what occurred, we need a way of "playing back" these recorded states on the client. This requires some new code and infrastructure. By playing back these update states—which contained data produced by non-deterministic sources—we remove the non-determinism.</p>
+
+<p>The program can then be thought of as running in a C++ shell or jail where the update data producers (e.g., GLFW input callbacks and packet receive functions) are replaced with simulators that reproduce the same output as during the live session. These simulators track the current tick number or update call number and output the same data.</p>
+
+<p>In this state, you can update your game at any speed or bind keybinds to move the state to the next tick. This allows for frame-by-frame analysis. Frame-by-frame analysis is crucial to assess how suboptimal situations perform. If errors occur, they should be minimized relative to what the player actually sees, as this is the main metric players use to assess game quality. You can then quantify acceptable error and enforce it in the logic.</p>
+
+<h2>Benefits of This System</h2>
+<p>This system is very important for both client and server, as it lets you replicate situations that happen on other computers. When something goes wrong, you can get that player's logs and replicate the session to determine if the issue was caused by a network outage or a logic error.</p>
+
+<p>Additionally, this approach provides a "demo playback system" that allows players to replay games and record highlights. Investing time into this system benefits both debugging and player experience.</p>
